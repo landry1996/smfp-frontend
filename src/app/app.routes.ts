@@ -94,6 +94,12 @@ export const routes: Routes = [
         data: { roles: ['ADMIN'] },
         loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
       },
+      {
+        path: 'ai-assistant',
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN'] },
+        loadChildren: () => import('./features/ai-assistant/ai.routes').then(m => m.AI_ROUTES)
+      },
     ]
   },
 

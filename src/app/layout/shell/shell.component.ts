@@ -36,6 +36,7 @@ export class ShellComponent {
       { label: 'Orchestration',  icon: '🔧', route: '/orchestration', roles: ['ADMIN'] },
       { label: 'Audit',          icon: '📜', route: '/audit',         roles: ['ADMIN'] },
       { label: 'Administration', icon: '👥', route: '/admin',         roles: ['ADMIN'] },
+      { label: 'Assistant IA',   icon: '🤖', route: '/ai-assistant',  roles: ['ADMIN'] },
     ];
     return items.filter(i => !role || i.roles.includes(role));
   });

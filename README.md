@@ -27,7 +27,7 @@
 
 ## Aperçu
 
-SMFP Frontend est une SPA (Single Page Application) Angular 21 conçue pour gérer l'ensemble des opérations d'une plateforme bancaire numérique : comptes, paiements, prêts, détection de fraude, audit, orchestration de jobs, et bien plus.
+SMFP Frontend est une SPA (Single Page Application) Angular 21 conçue pour gérer l'ensemble des opérations d'une plateforme bancaire numérique : comptes, paiements, prêts, détection de fraude, audit, orchestration de jobs, assistance IA et bien plus.
 
 L'application est pensée pour trois types d'utilisateurs :
 
@@ -230,7 +230,8 @@ smfp-frontend/
 │   │       ├── admin/
 │   │       │   ├── users/            # Gestion des utilisateurs
 │   │       │   └── rbac/             # Rôles et permissions
-│   │       └── chatbot/              # Widget chatbot temps réel (WebSocket)
+│   │       ├── chatbot/              # Widget chatbot temps réel (WebSocket + IA)
+    └── ai-assistant/         # Assistant IA — chat, résumé, explication fraude
 │   │
 │   ├── environments/
 │   │   ├── environment.ts            # Développement
@@ -288,6 +289,26 @@ Vue d'ensemble personnalisée selon le rôle :
 | `/loans/:id`         | Détail d'un prêt                        | `GET /loans/{id}`        |
 
 Champs du formulaire de demande : `purpose` (PERSONAL/HOME/BUSINESS/AUTO/EDUCATION), `employment` (EMPLOYED/SELF_EMPLOYED/UNEMPLOYED), `loanAmount`, `durationMonths`.
+
+### Assistant IA (`/ai-assistant`) — ADMIN uniquement
+
+Interface d'accès direct à l'`ai-orchestration-service` :
+
+| Sous-route              | Description                                                          |
+|------------------------|----------------------------------------------------------------------|
+| `/ai-assistant`         | Chat libre avec Mistral 7B (questions bancaires, conseil financier)  |
+| `/ai-assistant/summarize` | Résumé automatique d'un texte ou document                          |
+| `/ai-assistant/fraud`   | Explication en langage naturel d'une alerte fraude                   |
+
+Endpoints backend utilisés via `AiService` :
+
+```
+POST /api/ai/chat          → AiChatRequest  → AiChatResponse
+POST /api/ai/summarize     → AiSummarizeRequest → AiChatResponse
+POST /api/ai/fraud/explain → FraudExplainRequest → AiChatResponse
+```
+
+Le champ `fallback: true` dans la réponse indique qu'Ollama etait indisponible — un message de dégradation gracieuse est affiché à l'utilisateur.
 
 ### Fraude (`/fraud`) — ADMIN uniquement
 
@@ -422,8 +443,9 @@ Chaque module possède son service dédié. Aucun composant n'injecte `HttpClien
 | `AdminService`           | admin       | `/users`, `POST /users/{id}/activate`, `POST /users/{id}/suspend` |
 | `ReportService`          | reports     | `GET /reports`, `GET /analytics`                           |
 | `OrchestrationService`   | orchestration | `GET /job-executions`, `GET /dags`                       |
-| `GeolocationService`     | geolocation | `GET /locations`, `GET /locations/stats`                   |
-| `ProfileService`         | profile     | `GET /auth/me`, `GET /users/{id}`                          |
+| `GeolocationService`     | geolocation    | `GET /locations`, `GET /locations/stats`                       |
+| `ProfileService`         | profile        | `GET /auth/me`, `GET /users/{id}`                              |
+| `AiService`              | ai-assistant   | `POST /ai/chat`, `POST /ai/summarize`, `POST /ai/fraud/explain` |
 
 ---
 
@@ -515,6 +537,17 @@ JobExecution { id, jobName?, status, startedAt?, finishedAt?, durationMs? }
 Dag          { name?, paused, schedule?, lastRun?, nextRun? }
 ```
 
+### `ai.models.ts`
+```typescript
+AiChatRequest       { message, sessionId?, userId?, language? }
+AiSummarizeRequest  { text, maxWords, language, context? }
+FraudExplainRequest { transactionId, amount, riskScore, riskLevel, triggeredRules, location?, userId?, language? }
+AiChatResponse      { response, model, durationMs, tokenCount, fallback, timestamp }
+```
+
+> `fallback: true` signifie qu'Ollama etait indisponible — afficher un message degrade a l'utilisateur.
+> Le modele `"mistral"` est retourne dans `model` lorsque la reponse est reelle.
+
 ---
 
 ## Communication temps réel
@@ -526,21 +559,25 @@ Le **chatbot** (`/features/chatbot`) utilise WebSocket via **STOMP over SockJS**
 - Abonnement : `SUBSCRIBE /topic/chat/{sessionId}`
 - Librairies : `@stomp/stompjs` + `sockjs-client`
 
+Le **chatbot-service** backend peut s'appuyer sur l'`ai-orchestration-service` pour la detection d'intention via Mistral 7B (NLP), avec fallback automatique sur la detection par mots-cles si Ollama est indisponible.
+
 ---
 
 ## Intégration backend
 
 L'application frontend communique avec le **backend SMFP** composé de microservices Spring Boot exposés via une API Gateway sur le port `8080`.
 
-| Microservice               | Port  | Routes frontend concernées           |
-|---------------------------|-------|--------------------------------------|
-| API Gateway               | 8080  | Toutes (point d'entrée unique `/api`) |
-| user-service              | 8081  | `/auth`, `/admin/users`              |
-| account-service           | 8082  | `/accounts`                          |
-| payment-service           | 8083  | `/payments`                          |
-| loan-service              | 8084  | `/loans`                             |
-| fraud-detection-service   | 8087  | `/fraud`                             |
-| notification-service      | 8091  | `/notifications`                     |
+| Microservice               | Port  | Routes frontend concernées                     |
+|---------------------------|-------|------------------------------------------------|
+| API Gateway               | 8080  | Toutes (point d'entrée unique `/api`)          |
+| user-service              | 8081  | `/auth`, `/admin/users`                        |
+| account-service           | 8082  | `/accounts`                                    |
+| payment-service           | 8083  | `/payments`                                    |
+| loan-service              | 8084  | `/loans`                                       |
+| fraud-detection-service   | 8087  | `/fraud`                                       |
+| notification-service      | 8091  | `/notifications`                               |
+| chatbot-service           | 8094  | `/chatbot` (WebSocket + REST)                  |
+| ai-orchestration-service  | 8098  | `/ai-assistant` — chat, résumé, explication IA |
 
 > En développement, configurer le proxy Angular pour rediriger `/api/**` vers `http://localhost:8080`.
 
@@ -603,12 +640,13 @@ npm test                # ng test
 
 ## Variables d'environnement clés
 
-| Variable          | Valeur défaut | Description                              |
-|------------------|--------------|------------------------------------------|
-| `apiUrl`          | `/api`        | Base URL de l'API (proxyfié en dev)      |
-| `wsUrl`           | `/ws/chat`    | Endpoint WebSocket chatbot               |
-| `refreshTokenKey` | `smfp_refresh_token` | Clé localStorage pour le refresh token |
+| Variable          | Valeur défaut        | Description                                   |
+|------------------|----------------------|-----------------------------------------------|
+| `apiUrl`          | `/api`               | Base URL de l'API (proxyfié en dev)           |
+| `wsUrl`           | `/ws/chat`           | Endpoint WebSocket chatbot                    |
+| `aiUrl`           | `/api/ai`            | Base URL de l'AI Orchestration Service        |
+| `refreshTokenKey` | `smfp_refresh_token` | Clé localStorage pour le refresh token       |
 
 ---
 
-*Généré le 21 mars 2026 — SMFP Frontend v0.0.0*
+*Généré le 21 mars 2026 — SMFP Frontend v0.0.0 | AI Integration : Ollama/Mistral via ai-orchestration-service*
