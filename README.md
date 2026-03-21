@@ -41,19 +41,18 @@ L'application est pensée pour trois types d'utilisateurs :
 
 ## Stack technique
 
-| Technologie          | Version    | Usage                                      |
-|----------------------|------------|--------------------------------------------|
-| Angular              | 21.x       | Framework principal, composants standalone |
-| TypeScript           | 5.9         | Typage statique                            |
-| Tailwind CSS         | 4.x        | Design system utilitaire                   |
-| RxJS                 | 7.8        | Gestion des flux asynchrones               |
-| NgRx Signals         | 21.x       | Gestion d'état réactive (signals)          |
-| ngx-toastr           | 20.x       | Notifications toast                        |
-| ApexCharts           | 5.x        | Graphiques analytics                       |
-| Leaflet              | 1.9        | Cartographie géolocalisation               |
-| STOMP / SockJS       | 7.x / 1.6  | WebSocket chatbot temps réel               |
-| date-fns             | 4.x        | Manipulation de dates                      |
-| Prettier             | —          | Formatage du code                          |
+| Technologie          | Version    | Usage                                            |
+|----------------------|------------|--------------------------------------------------|
+| Angular              | 21.x       | Framework principal, composants standalone       |
+| TypeScript           | 5.9        | Typage statique                                  |
+| Bootstrap            | 5.3        | Design system — grille, composants, utilitaires  |
+| Bootstrap Icons      | 1.11       | Icones SVG (`bi bi-*`)                           |
+| RxJS                 | 7.8        | Gestion des flux asynchrones                     |
+| Angular Signals      | 21.x       | Gestion d'etat reactive (`signal`, `computed`)   |
+| ngx-toastr           | 20.x       | Notifications toast                              |
+| Leaflet              | 1.9        | Cartographie geolocalisation                     |
+| STOMP / SockJS       | 7.x / 1.6  | WebSocket chatbot temps reel                     |
+| Prettier             | —          | Formatage du code                                |
 
 ---
 
