@@ -1,0 +1,73 @@
+<div class="space-y-6">
+  <div class="flex items-center gap-3">
+    <a routerLink="/reports" class="text-sm text-gray-500 hover:text-gray-700">← Rapports</a>
+    <span class="text-gray-300">/</span>
+    <h1 class="text-2xl font-bold text-gray-900">Analytics</h1>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading()" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div *ngFor="let i of [1,2,3,4]" class="h-24 bg-gray-100 rounded-xl animate-pulse"></div>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
+    Erreur lors du chargement des analytics.
+  </div>
+
+  <!-- Contenu -->
+  <div *ngIf="!loading() && analytics() as a" class="space-y-6">
+    <!-- KPIs -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="card text-center">
+        <p class="text-xs text-gray-500 uppercase mb-2">Transactions / jour</p>
+        <p class="text-2xl font-bold text-gray-900">{{ a.avgTransactionsPerDay ?? '-' }}</p>
+      </div>
+      <div class="card text-center">
+        <p class="text-xs text-gray-500 uppercase mb-2">Volume moyen</p>
+        <p class="text-2xl font-bold text-gray-900">{{ (a.avgTransactionVolume ?? 0) | currencyFormat }}</p>
+      </div>
+      <div class="card text-center">
+        <p class="text-xs text-gray-500 uppercase mb-2">Taux de succès</p>
+        <p class="text-2xl font-bold text-green-600">
+          {{ a.successRate ? ((a.successRate * 100).toFixed(1) + '%') : '-' }}
+        </p>
+      </div>
+      <div class="card text-center">
+        <p class="text-xs text-gray-500 uppercase mb-2">Nouveaux clients</p>
+        <p class="text-2xl font-bold text-blue-600">{{ a.newCustomers ?? '-' }}</p>
+      </div>
+    </div>
+
+    <!-- Données brutes -->
+    <div *ngIf="data().length > 0" class="card overflow-x-auto p-0">
+      <div class="px-4 py-3 border-b border-gray-200">
+        <h2 class="text-sm font-semibold text-gray-900">Données brutes</h2>
+      </div>
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50">
+          <tr>
+            <th *ngFor="let key of tableKeys()"
+                class="px-4 py-2 text-left text-xs font-semibold text-gray-500">
+              {{ key }}
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr *ngFor="let row of data()" class="hover:bg-gray-50">
+            <td *ngFor="let key of tableKeys()" class="px-4 py-2 text-gray-700 text-xs">
+              {{ row[key] ?? '-' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- État vide -->
+  <div *ngIf="!loading() && !analytics() && !error()"
+       class="card text-center py-12 text-gray-400">
+    <span class="text-5xl block mb-3">📈</span>
+    <p class="font-medium">Aucune donnée analytique disponible</p>
+  </div>
+</div>

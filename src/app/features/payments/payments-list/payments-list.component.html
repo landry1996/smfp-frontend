@@ -1,0 +1,68 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Paiements & Transactions</h1>
+      <p class="text-sm text-gray-500 mt-1">Historique de toutes vos transactions</p>
+    </div>
+    <div class="flex gap-2">
+      <a routerLink="/payments/transfer"
+         class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+        Nouveau virement
+      </a>
+      <a routerLink="/payments/mobile-money"
+         class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors">
+        Mobile Money
+      </a>
+    </div>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading()" class="space-y-2">
+    <div *ngFor="let i of [1,2,3,4,5]" class="h-14 bg-gray-100 rounded-lg animate-pulse"></div>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
+    Erreur lors du chargement des transactions.
+  </div>
+
+  <!-- État vide -->
+  <div *ngIf="!loading() && data().length === 0 && !error()"
+       class="card text-center py-12 text-gray-400">
+    <span class="text-5xl block mb-3">💸</span>
+    <p class="font-medium">Aucune transaction trouvée</p>
+  </div>
+
+  <!-- Tableau des paiements -->
+  <div *ngIf="!loading() && data().length > 0" class="card overflow-x-auto p-0">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="px-4 py-3 text-left font-semibold text-gray-600">Référence</th>
+          <th class="px-4 py-3 text-left font-semibold text-gray-600">Type</th>
+          <th class="px-4 py-3 text-left font-semibold text-gray-600">Bénéficiaire</th>
+          <th class="px-4 py-3 text-right font-semibold text-gray-600">Montant</th>
+          <th class="px-4 py-3 text-center font-semibold text-gray-600">Statut</th>
+          <th class="px-4 py-3 text-left font-semibold text-gray-600">Date</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <tr *ngFor="let p of data()" class="hover:bg-gray-50 transition-colors">
+          <td class="px-4 py-3 font-mono text-xs text-gray-500">{{ p.reference ?? p.id }}</td>
+          <td class="px-4 py-3 text-gray-700">{{ p.type ?? p.paymentMethod }}</td>
+          <td class="px-4 py-3 text-gray-700">{{ p.beneficiaryName ?? p.recipientAccount ?? '-' }}</td>
+          <td class="px-4 py-3 text-right font-semibold"
+              [class]="p.direction === 'CREDIT' ? 'text-green-600' : 'text-red-600'">
+            {{ p.direction === 'CREDIT' ? '+' : '-' }}{{ p.amount | currencyFormat:p.currency }}
+          </td>
+          <td class="px-4 py-3 text-center">
+            <span [class]="p.status | statusBadge">{{ p.status }}</span>
+          </td>
+          <td class="px-4 py-3 text-gray-500 text-xs">
+            {{ p.createdAt ? (p.createdAt | date:'dd/MM/yyyy HH:mm') : '-' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

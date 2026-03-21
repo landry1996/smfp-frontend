@@ -1,0 +1,55 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Notifications</h1>
+      <p class="text-sm text-gray-500 mt-1">
+        {{ unread() }} non lue(s) sur {{ data().length }} au total
+      </p>
+    </div>
+    <button *ngIf="unread() > 0"
+            (click)="markAllRead()"
+            class="px-3 py-1.5 text-sm text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
+      Tout marquer comme lu
+    </button>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading()" class="space-y-3">
+    <div *ngFor="let i of [1,2,3,4,5]" class="h-16 bg-gray-100 rounded-xl animate-pulse"></div>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
+    Erreur lors du chargement des notifications.
+  </div>
+
+  <!-- État vide -->
+  <div *ngIf="!loading() && !error() && data().length === 0"
+       class="card text-center py-12 text-gray-400">
+    <span class="text-5xl block mb-3">🔔</span>
+    <p class="font-medium">Aucune notification</p>
+  </div>
+
+  <!-- Liste des notifications -->
+  <div class="space-y-2">
+    <div *ngFor="let notif of data()"
+         class="card cursor-pointer hover:shadow-md transition-shadow"
+         [class.bg-blue-50]="!notif.read"
+         (click)="markRead(notif)">
+      <div class="flex items-start gap-3">
+        <div [class]="notif.read
+          ? 'w-2.5 h-2.5 mt-1.5 rounded-full bg-gray-300 flex-shrink-0'
+          : 'w-2.5 h-2.5 mt-1.5 rounded-full bg-blue-500 flex-shrink-0'">
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-start justify-between gap-2">
+            <p class="text-sm font-semibold text-gray-900">{{ notif.title }}</p>
+            <span [class]="channelBadge(notif.channel)" class="flex-shrink-0">{{ notif.channel }}</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-0.5">{{ notif.message }}</p>
+          <p class="text-xs text-gray-400 mt-1">{{ notif.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

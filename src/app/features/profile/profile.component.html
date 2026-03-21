@@ -1,0 +1,95 @@
+<div class="space-y-6 max-w-2xl mx-auto">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Mon Profil</h1>
+    <p class="text-sm text-gray-500 mt-1">Gérez vos informations personnelles</p>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading()" class="space-y-4">
+    <div class="h-32 bg-gray-100 rounded-xl animate-pulse"></div>
+    <div class="h-48 bg-gray-100 rounded-xl animate-pulse"></div>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
+    Impossible de charger le profil.
+  </div>
+
+  <!-- Contenu -->
+  <div *ngIf="!loading() && profile() as p" class="space-y-6">
+
+    <!-- Avatar + nom -->
+    <div class="card flex items-center gap-4">
+      <div class="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-2xl font-bold flex-shrink-0">
+        {{ initials(p) }}
+      </div>
+      <div>
+        <p class="text-lg font-bold text-gray-900">{{ p.firstName }} {{ p.lastName }}</p>
+        <p class="text-sm text-gray-500">{{ p.email }}</p>
+        <span class="inline-flex mt-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+          {{ p.role ?? p.roles?.[0] }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Informations personnelles -->
+    <div class="card">
+      <h2 class="text-base font-semibold text-gray-900 mb-4">Informations personnelles</h2>
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <dt class="text-xs text-gray-400 uppercase">Prénom</dt>
+          <dd class="text-sm font-medium text-gray-900 mt-1">{{ p.firstName ?? '-' }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-gray-400 uppercase">Nom</dt>
+          <dd class="text-sm font-medium text-gray-900 mt-1">{{ p.lastName ?? '-' }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-gray-400 uppercase">Email</dt>
+          <dd class="text-sm font-medium text-gray-900 mt-1">{{ p.email ?? '-' }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-gray-400 uppercase">Téléphone</dt>
+          <dd class="text-sm font-medium text-gray-900 mt-1">{{ p.phone ?? p.phoneNumber ?? '-' }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-gray-400 uppercase">Identifiant</dt>
+          <dd class="text-sm font-medium text-gray-900 mt-1 font-mono">{{ p.id ?? p.userId ?? '-' }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-gray-400 uppercase">Membre depuis</dt>
+          <dd class="text-sm font-medium text-gray-900 mt-1">
+            {{ p.createdAt ? (p.createdAt | date:'dd MMMM yyyy':'':'fr') : '-' }}
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Sécurité -->
+    <div class="card">
+      <h2 class="text-base font-semibold text-gray-900 mb-4">Sécurité</h2>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div>
+            <p class="text-sm font-medium text-gray-900">Mot de passe</p>
+            <p class="text-xs text-gray-500">
+              Dernière modification:
+              {{ p.lastPasswordChange ? (p.lastPasswordChange | date:'dd/MM/yyyy') : 'inconnue' }}
+            </p>
+          </div>
+          <button class="text-sm text-blue-600 hover:underline">Modifier</button>
+        </div>
+        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div>
+            <p class="text-sm font-medium text-gray-900">Authentification 2FA</p>
+            <p class="text-xs text-gray-500">{{ p.twoFactorEnabled ? 'Activée' : 'Désactivée' }}</p>
+          </div>
+          <button class="text-sm text-blue-600 hover:underline">
+            {{ p.twoFactorEnabled ? 'Désactiver' : 'Activer' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

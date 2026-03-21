@@ -1,0 +1,31 @@
+services:
+
+  smfp-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: smfp-frontend:latest
+    container_name: smfp-frontend
+    ports:
+      - "80:80"
+    networks:
+      - smfp-network
+    # Le frontend dépend du gateway pour proxifier les appels /api/*
+    # Le gateway est défini dans le docker-compose.yml du backend (smfp/)
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:80 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+# ============================================================
+# Réseau partagé avec le backend smfp
+# Le réseau est créé par le docker-compose.yml du backend.
+# Lancer d'abord : cd ../smfp && docker-compose up -d
+# ============================================================
+networks:
+  smfp-network:
+    external: true
+    name: smfp_smfp-network

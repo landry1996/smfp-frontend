@@ -1,0 +1,73 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Mes Tâches</h1>
+      <p class="text-sm text-gray-500 mt-1">{{ pending() }} tâche(s) en attente</p>
+    </div>
+    <a routerLink="/workflow/approvals"
+       class="px-4 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors">
+      Approbations →
+    </a>
+  </div>
+
+  <!-- Filtres de statut -->
+  <div class="flex gap-2 flex-wrap">
+    <button *ngFor="let f of filters"
+            (click)="activeFilter.set(f.value)"
+            [class]="activeFilter() === f.value
+              ? 'px-3 py-1.5 text-sm font-medium rounded-lg bg-blue-600 text-white'
+              : 'px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200'">
+      {{ f.label }}
+      <span *ngIf="f.value === 'PENDING'" class="ml-1 text-xs">({{ pending() }})</span>
+    </button>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading()" class="space-y-2">
+    <div *ngFor="let i of [1,2,3,4]" class="h-16 bg-gray-100 rounded-lg animate-pulse"></div>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
+    Erreur lors du chargement des tâches.
+  </div>
+
+  <!-- État vide -->
+  <div *ngIf="!loading() && filtered().length === 0 && !error()"
+       class="card text-center py-12 text-gray-400">
+    <span class="text-5xl block mb-3">✅</span>
+    <p class="font-medium">Aucune tâche dans cette catégorie</p>
+  </div>
+
+  <!-- Liste des tâches -->
+  <div class="space-y-3">
+    <div *ngFor="let task of filtered()"
+         class="card hover:shadow-md transition-shadow"
+         [class.border-l-4]="task.priority === 'HIGH'"
+         [class.border-red-400]="task.priority === 'HIGH'">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-gray-900">{{ task.taskName ?? task.name }}</p>
+          <p class="text-sm text-gray-500 mt-0.5 truncate">{{ task.description ?? '-' }}</p>
+          <div class="flex items-center gap-3 mt-2">
+            <span class="text-xs text-gray-400">Assigné: {{ task.assigneeId ?? task.assignedTo ?? 'Moi' }}</span>
+            <span *ngIf="task.dueDate" class="text-xs text-gray-400">
+              Échéance: {{ task.dueDate | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+        </div>
+        <div class="flex flex-col items-end gap-2 flex-shrink-0">
+          <span [class]="task.status | statusBadge">{{ task.status }}</span>
+          <span [class]="task.priority | statusBadge">{{ task.priority }}</span>
+        </div>
+      </div>
+
+      <div *ngIf="task.status === 'PENDING'" class="mt-3 flex gap-2">
+        <button (click)="completeTask(task)"
+                class="px-3 py-1.5 text-xs bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+          Terminer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,90 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Tableau de bord – Fraude</h1>
+    <p class="text-sm text-gray-500 mt-1">Vue d'ensemble de la détection de fraude</p>
+  </div>
+
+  <!-- Skeleton KPIs -->
+  <div *ngIf="loading()" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div *ngFor="let i of [1,2,3,4]" class="h-24 bg-gray-100 rounded-xl animate-pulse"></div>
+  </div>
+
+  <!-- KPIs -->
+  <div *ngIf="!loading() && overview() as ov" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="card border-l-4 border-red-400">
+      <p class="text-sm text-gray-500 mb-1">Alertes ouvertes</p>
+      <p class="text-3xl font-bold text-red-600">{{ ov.openAlerts ?? 0 }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ ov.criticalAlerts ?? 0 }} critique(s)</p>
+    </div>
+    <div class="card border-l-4 border-orange-400">
+      <p class="text-sm text-gray-500 mb-1">Transactions analysées</p>
+      <p class="text-3xl font-bold text-gray-900">{{ ov.totalChecks ?? 0 }}</p>
+      <p class="text-xs text-gray-400 mt-1">aujourd'hui</p>
+    </div>
+    <div class="card border-l-4 border-yellow-400">
+      <p class="text-sm text-gray-500 mb-1">Taux de fraude</p>
+      <p class="text-3xl font-bold text-yellow-600">{{ ((ov.fraudRate ?? 0) * 100).toFixed(2) }}%</p>
+      <p class="text-xs text-gray-400 mt-1">sur 30 jours</p>
+    </div>
+    <div class="card border-l-4 border-green-400">
+      <p class="text-sm text-gray-500 mb-1">Règles actives</p>
+      <p class="text-3xl font-bold text-green-600">{{ ov.activeRules ?? 0 }}</p>
+      <p class="text-xs text-gray-400 mt-1">règles configurées</p>
+    </div>
+  </div>
+
+  <!-- Grille alertes + navigation -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- Alertes récentes -->
+    <div class="card">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-base font-semibold text-gray-900">Alertes récentes</h2>
+        <a routerLink="/fraud/alerts" class="text-sm text-blue-600 hover:underline">Voir tout →</a>
+      </div>
+      <div *ngIf="recentAlerts().length === 0" class="text-center py-6 text-gray-400 text-sm">
+        Aucune alerte récente
+      </div>
+      <div class="space-y-2">
+        <div *ngFor="let alert of recentAlerts()"
+             class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div>
+            <p class="text-sm font-medium text-gray-900">{{ alert.type ?? alert.ruleCode }}</p>
+            <p class="text-xs text-gray-500">{{ alert.transactionId ?? '-' }}</p>
+          </div>
+          <span [class]="alert.riskLevel | statusBadge">{{ alert.riskLevel }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation rapide -->
+    <div class="card">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-base font-semibold text-gray-900">Navigation rapide</h2>
+      </div>
+      <div class="space-y-2">
+        <a routerLink="/fraud/alerts"
+           class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+          <span class="text-sm font-medium text-gray-700">Alertes fraude</span>
+          <span class="text-gray-400">→</span>
+        </a>
+        <a routerLink="/fraud/rules"
+           class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+          <span class="text-sm font-medium text-gray-700">Règles de détection</span>
+          <span class="text-gray-400">→</span>
+        </a>
+        <a routerLink="/fraud/patterns"
+           class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+          <span class="text-sm font-medium text-gray-700">Patterns de fraude</span>
+          <span class="text-gray-400">→</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
+    Erreur lors du chargement du tableau de bord fraude.
+  </div>
+</div>

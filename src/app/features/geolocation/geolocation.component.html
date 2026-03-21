@@ -1,0 +1,75 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Géolocalisation</h1>
+    <p class="text-sm text-gray-500 mt-1">Suivi des agents et zones géographiques</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="card text-center">
+      <span class="text-3xl block mb-2">📍</span>
+      <p class="text-2xl font-bold text-gray-900">{{ activeCount() }}</p>
+      <p class="text-xs text-gray-500 mt-1">Agents actifs</p>
+    </div>
+    <div class="card text-center">
+      <span class="text-3xl block mb-2">🗺️</span>
+      <p class="text-2xl font-bold text-gray-900">-</p>
+      <p class="text-xs text-gray-500 mt-1">Zones à risque</p>
+    </div>
+    <div class="card text-center">
+      <span class="text-3xl block mb-2">🏪</span>
+      <p class="text-2xl font-bold text-gray-900">-</p>
+      <p class="text-xs text-gray-500 mt-1">Points d'intérêt</p>
+    </div>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading()" class="space-y-3">
+    <div *ngFor="let i of [1,2,3]" class="h-16 bg-gray-100 rounded-xl animate-pulse"></div>
+  </div>
+
+  <!-- Tableau des positions -->
+  <div *ngIf="!loading() && data().length > 0" class="card overflow-x-auto p-0">
+    <div class="px-4 py-3 border-b border-gray-200">
+      <h2 class="text-sm font-semibold text-gray-900">Positions récentes des agents</h2>
+    </div>
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left font-semibold text-gray-600">Agent</th>
+          <th class="px-4 py-3 text-left font-semibold text-gray-600">Latitude</th>
+          <th class="px-4 py-3 text-left font-semibold text-gray-600">Longitude</th>
+          <th class="px-4 py-3 text-center font-semibold text-gray-600">Statut</th>
+          <th class="px-4 py-3 text-left font-semibold text-gray-600">Dernière MAJ</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <tr *ngFor="let loc of data()" class="hover:bg-gray-50">
+          <td class="px-4 py-3 font-medium text-gray-900">{{ loc.agentId ?? '-' }}</td>
+          <td class="px-4 py-3 font-mono text-gray-600">{{ loc.latitude?.toFixed(6) ?? '-' }}</td>
+          <td class="px-4 py-3 font-mono text-gray-600">{{ loc.longitude?.toFixed(6) ?? '-' }}</td>
+          <td class="px-4 py-3 text-center">
+            <span [class]="(loc.status ?? 'INACTIVE') | statusBadge">
+              {{ loc.status ?? 'Inconnu' }}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-gray-500 text-xs">
+            {{ loc.timestamp | date:'dd/MM/yyyy HH:mm' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- État vide -->
+  <div *ngIf="!loading() && data().length === 0 && !error()"
+       class="card text-center py-12 text-gray-400">
+    <span class="text-5xl block mb-3">🗺️</span>
+    <p class="font-medium">Aucune donnée de géolocalisation disponible</p>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
+    Erreur lors du chargement des données de géolocalisation.
+  </div>
+</div>

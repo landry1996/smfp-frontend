@@ -1,0 +1,65 @@
+<div class="space-y-6">
+  <div class="flex items-center gap-3">
+    <a routerLink="/accounts" class="text-sm text-gray-500 hover:text-gray-700">← Retour</a>
+    <span class="text-gray-300">/</span>
+    <h1 class="text-2xl font-bold text-gray-900">Détail du compte</h1>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading()" class="space-y-4">
+    <div class="h-32 bg-gray-100 rounded-xl animate-pulse"></div>
+    <div class="h-48 bg-gray-100 rounded-xl animate-pulse"></div>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
+    Impossible de charger les informations du compte.
+  </div>
+
+  <!-- Contenu -->
+  <div *ngIf="!loading() && account() as acc" class="space-y-6">
+
+    <!-- Carte récapitulative -->
+    <div class="card bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-blue-200 text-sm">Numéro de compte</p>
+          <p class="text-xl font-mono font-bold mt-1">{{ acc.accountNumber }}</p>
+          <p class="text-blue-200 text-sm mt-2">{{ acc.type }} · {{ acc.currency }}</p>
+        </div>
+        <span [class]="acc.status | statusBadge">{{ acc.status }}</span>
+      </div>
+      <div class="mt-6">
+        <p class="text-blue-200 text-sm">Solde disponible</p>
+        <p class="text-3xl font-bold mt-1">{{ acc.balance | currencyFormat:acc.currency }}</p>
+      </div>
+    </div>
+
+    <!-- Grille de détails -->
+    <div class="card">
+      <h2 class="text-base font-semibold text-gray-900 mb-4">Informations du compte</h2>
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div *ngFor="let field of detailFields(acc)">
+          <dt class="text-xs text-gray-500 uppercase tracking-wide">{{ field.label }}</dt>
+          <dd class="text-sm font-medium text-gray-900 mt-1">{{ field.value }}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="card">
+      <h2 class="text-base font-semibold text-gray-900 mb-4">Actions</h2>
+      <div class="flex flex-wrap gap-3">
+        <a routerLink="/payments/transfer"
+           class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+          Effectuer un virement
+        </a>
+        <a routerLink="/payments"
+           class="px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors">
+          Voir les transactions
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,82 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Mes Prêts</h1>
+      <p class="text-sm text-gray-500 mt-1">Suivez vos demandes et remboursements</p>
+    </div>
+    <div class="flex gap-2">
+      <a routerLink="/loans/simulator"
+         class="px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors">
+        Simulateur
+      </a>
+      <a routerLink="/loans/apply"
+         class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+        Faire une demande
+      </a>
+    </div>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading()" class="space-y-3">
+    <div *ngFor="let i of [1,2,3]" class="h-20 bg-gray-100 rounded-xl animate-pulse"></div>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
+    Erreur lors du chargement des prêts.
+  </div>
+
+  <!-- État vide -->
+  <div *ngIf="!loading() && !error() && data().length === 0"
+       class="card text-center py-12 text-gray-400">
+    <span class="text-5xl block mb-3">📋</span>
+    <p class="font-medium">Aucun prêt trouvé</p>
+    <a routerLink="/loans/apply" class="mt-4 inline-block text-sm text-blue-600 hover:underline">
+      Faire une demande de prêt
+    </a>
+  </div>
+
+  <!-- Liste des prêts -->
+  <div *ngIf="!loading() && data().length > 0" class="space-y-4">
+    <div *ngFor="let loan of data()"
+         class="card hover:shadow-md transition-shadow cursor-pointer"
+         [routerLink]="['/loans', loan.id]">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="font-semibold text-gray-900">{{ loan.purpose ?? 'Prêt' }}</p>
+          <p class="text-sm text-gray-500 mt-0.5">Réf: {{ loan.reference ?? loan.id }}</p>
+        </div>
+        <span [class]="loan.status | statusBadge">{{ loan.status }}</span>
+      </div>
+
+      <div class="mt-4 grid grid-cols-3 gap-4">
+        <div>
+          <p class="text-xs text-gray-400 uppercase">Montant</p>
+          <p class="text-sm font-semibold text-gray-900">{{ loan.loanAmount | currencyFormat }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-400 uppercase">Durée</p>
+          <p class="text-sm font-semibold text-gray-900">{{ loan.durationMonths ?? '-' }} mois</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-400 uppercase">Taux</p>
+          <p class="text-sm font-semibold text-gray-900">
+            {{ loan.interestRate != null ? loan.interestRate.toFixed(2) + '%' : '-' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Barre de remboursement pour prêts actifs -->
+      <div *ngIf="loan.status === 'ACTIVE' && loan.paidAmount != null" class="mt-4">
+        <div class="flex justify-between text-xs text-gray-400 mb-1">
+          <span>Remboursé: {{ loan.paidAmount | currencyFormat }}</span>
+          <span>{{ ((loan.paidAmount / loan.loanAmount) * 100).toFixed(0) }}%</span>
+        </div>
+        <div class="h-2 bg-gray-200 rounded-full">
+          <div class="h-2 bg-blue-500 rounded-full"
+               [style.width.%]="(loan.paidAmount / loan.loanAmount) * 100"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

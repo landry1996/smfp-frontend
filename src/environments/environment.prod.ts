@@ -1,0 +1,9 @@
+export const environment = {
+  production: true,
+  apiUrl: '/api',
+  wsUrl: '/ws/chat',
+  appName: 'SMFP',
+  appFullName: 'Système de Management Financier et Paiements',
+  tokenKey: 'smfp_access_token',
+  refreshTokenKey: 'smfp_refresh_token',
+};

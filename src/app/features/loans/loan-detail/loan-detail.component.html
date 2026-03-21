@@ -1,0 +1,95 @@
+<div class="space-y-6">
+  <div class="flex items-center gap-3">
+    <a routerLink="/loans" class="text-sm text-gray-500 hover:text-gray-700">← Retour</a>
+    <span class="text-gray-300">/</span>
+    <h1 class="text-2xl font-bold text-gray-900">Détail du prêt</h1>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading()" class="space-y-4">
+    <div class="h-32 bg-gray-100 rounded-xl animate-pulse"></div>
+    <div class="h-48 bg-gray-100 rounded-xl animate-pulse"></div>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
+    Impossible de charger les informations du prêt.
+  </div>
+
+  <!-- Contenu -->
+  <div *ngIf="!loading() && loan() as l" class="space-y-6">
+
+    <!-- Bannière de statut -->
+    <div class="card"
+         [class.border-l-4]="true"
+         [class.border-green-400]="l.status === 'ACTIVE'"
+         [class.border-yellow-400]="l.status === 'PENDING'"
+         [class.border-red-400]="l.status === 'REJECTED' || l.status === 'DEFAULTED'"
+         [class.border-blue-400]="l.status === 'APPROVED' || l.status === 'DISBURSED'"
+         [class.border-gray-300]="l.status === 'CLOSED'">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500">{{ l.purpose ?? 'Prêt' }} · Réf: {{ l.id }}</p>
+          <p class="text-2xl font-bold text-gray-900 mt-1">{{ l.loanAmount | currencyFormat }}</p>
+        </div>
+        <span [class]="l.status | statusBadge">{{ l.status }}</span>
+      </div>
+    </div>
+
+    <!-- Conditions du prêt -->
+    <div class="card">
+      <h2 class="text-base font-semibold text-gray-900 mb-4">Conditions du prêt</h2>
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <dt class="text-xs text-gray-400 uppercase">Montant</dt>
+          <dd class="text-sm font-semibold text-gray-900 mt-1">{{ l.loanAmount | currencyFormat }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-gray-400 uppercase">Durée</dt>
+          <dd class="text-sm font-semibold text-gray-900 mt-1">{{ l.durationMonths ?? '-' }} mois</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-gray-400 uppercase">Taux d'intérêt</dt>
+          <dd class="text-sm font-semibold text-gray-900 mt-1">
+            {{ l.interestRate != null ? l.interestRate.toFixed(2) + '% / an' : '-' }}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs text-gray-400 uppercase">Mensualité</dt>
+          <dd class="text-sm font-semibold text-gray-900 mt-1">
+            {{ l.monthlyPayment != null ? (l.monthlyPayment | currencyFormat) : '-' }}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs text-gray-400 uppercase">Date de demande</dt>
+          <dd class="text-sm font-semibold text-gray-900 mt-1">
+            {{ l.applicationDate ? (l.applicationDate | date:'dd/MM/yyyy') : '-' }}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs text-gray-400 uppercase">Échéance prévue</dt>
+          <dd class="text-sm font-semibold text-gray-900 mt-1">
+            {{ l.expectedMaturityDate ? (l.expectedMaturityDate | date:'dd/MM/yyyy') : '-' }}
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Avancement du remboursement -->
+    <div *ngIf="l.status === 'ACTIVE' && l.paidAmount != null" class="card">
+      <h2 class="text-base font-semibold text-gray-900 mb-4">Avancement du remboursement</h2>
+      <div class="flex justify-between text-sm text-gray-600 mb-2">
+        <span>{{ l.paidAmount | currencyFormat }} remboursés</span>
+        <span>{{ (l.loanAmount - l.paidAmount) | currencyFormat }} restants</span>
+      </div>
+      <div class="h-3 bg-gray-200 rounded-full">
+        <div class="h-3 bg-green-500 rounded-full transition-all"
+             [style.width.%]="(l.paidAmount / l.loanAmount) * 100"></div>
+      </div>
+      <p class="text-xs text-gray-400 mt-2">
+        {{ ((l.paidAmount / l.loanAmount) * 100).toFixed(1) }}% remboursé
+      </p>
+    </div>
+
+  </div>
+</div>

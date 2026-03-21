@@ -1,0 +1,54 @@
+<div class="space-y-6">
+  <div class="flex items-center gap-3">
+    <a routerLink="/workflow" class="text-sm text-gray-500 hover:text-gray-700">← Tâches</a>
+    <span class="text-gray-300">/</span>
+    <h1 class="text-2xl font-bold text-gray-900">Approbations</h1>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading()" class="space-y-3">
+    <div *ngFor="let i of [1,2,3]" class="h-20 bg-gray-100 rounded-xl animate-pulse"></div>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
+    Erreur lors du chargement des approbations.
+  </div>
+
+  <!-- État vide -->
+  <div *ngIf="!loading() && data().length === 0 && !error()"
+       class="card text-center py-12 text-gray-400">
+    <span class="text-5xl block mb-3">✍️</span>
+    <p class="font-medium">Aucune demande d'approbation en attente</p>
+  </div>
+
+  <!-- Liste des approbations -->
+  <div class="space-y-4">
+    <div *ngFor="let approval of data()" class="card">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex-1">
+          <div class="flex items-center gap-2">
+            <p class="font-semibold text-gray-900">{{ approval.subject ?? approval.workflowType }}</p>
+          </div>
+          <p class="text-sm text-gray-500 mt-1">{{ approval.description ?? '-' }}</p>
+          <div class="mt-2 flex items-center gap-4 text-xs text-gray-400">
+            <span>Demandeur: {{ approval.requestedBy ?? '-' }}</span>
+            <span>{{ approval.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+        <span [class]="approval.status | statusBadge" class="flex-shrink-0">{{ approval.status }}</span>
+      </div>
+
+      <div *ngIf="approval.status === 'PENDING'" class="mt-4 flex gap-3">
+        <button (click)="decide(approval, 'APPROVED')"
+                class="flex-1 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
+          Approuver
+        </button>
+        <button (click)="decide(approval, 'REJECTED')"
+                class="flex-1 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors">
+          Rejeter
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

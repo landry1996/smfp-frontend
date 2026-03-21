@@ -1,0 +1,136 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">
+      Bonjour, {{ user()?.firstName }} 👋
+    </h1>
+    <p class="text-gray-500 text-sm mt-1">Voici un aperçu de votre activité financière</p>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Solde total -->
+    <div class="card">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-sm font-medium text-gray-500">Solde total</span>
+        <span class="text-2xl">💰</span>
+      </div>
+      <p class="text-2xl font-bold text-gray-900">{{ totalBalance() | currencyFormat }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ activeAccounts() }} compte(s) actif(s)</p>
+    </div>
+
+    <!-- Notifications -->
+    <div class="card">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-sm font-medium text-gray-500">Notifications</span>
+        <span class="text-2xl">🔔</span>
+      </div>
+      <p class="text-2xl font-bold text-gray-900">{{ unreadNotifications() }}</p>
+      <p class="text-xs text-gray-400 mt-1">non lue(s)</p>
+    </div>
+
+    <!-- Alertes fraude (ADMIN) -->
+    <div *ngIf="isAdmin() && fraudOverview() as fo" class="card border-l-4 border-orange-400">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-sm font-medium text-gray-500">Alertes fraude</span>
+        <span class="text-2xl">🛡️</span>
+      </div>
+      <p class="text-2xl font-bold text-orange-600">{{ fo.openAlerts }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ fo.criticalAlerts }} critique(s)</p>
+    </div>
+
+    <!-- Taux de fraude (ADMIN) -->
+    <div *ngIf="isAdmin() && fraudOverview() as fo" class="card">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-sm font-medium text-gray-500">Transactions analysées</span>
+        <span class="text-2xl">📊</span>
+      </div>
+      <p class="text-2xl font-bold text-gray-900">{{ fo.totalChecks }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ (fo.fraudRate * 100).toFixed(1) }}% de fraude détectée</p>
+    </div>
+  </div>
+
+  <!-- Mes comptes -->
+  <div class="card">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-base font-semibold text-gray-900">Mes comptes</h2>
+      <a routerLink="/accounts" class="text-sm text-primary-600 hover:underline">Voir tout →</a>
+    </div>
+
+    <div *ngIf="loading()" class="space-y-3">
+      <div class="skeleton h-16 w-full"></div>
+      <div class="skeleton h-16 w-full"></div>
+    </div>
+
+    <div *ngIf="!loading() && accounts().length === 0" class="text-center py-8 text-gray-400">
+      <span class="text-4xl block mb-2">🏦</span>
+      Aucun compte trouvé
+    </div>
+
+    <div class="space-y-3">
+      <div *ngFor="let account of accounts()"
+           class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+           [routerLink]="['/accounts', account.id]">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-lg">
+            {{ account.type === 'SAVINGS' ? '💎' : account.type === 'CHECKING' ? '💳' : '📋' }}
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-900">{{ account.accountNumber }}</p>
+            <p class="text-xs text-gray-500">{{ account.type }} · {{ account.currency }}</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-sm font-bold text-gray-900">{{ account.balance | currencyFormat }}</p>
+          <span [class]="account.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'">
+            {{ account.status }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications récentes -->
+  <div class="card">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-base font-semibold text-gray-900">Notifications récentes</h2>
+      <a routerLink="/notifications" class="text-sm text-primary-600 hover:underline">Voir tout →</a>
+    </div>
+    <div class="space-y-2">
+      <div *ngFor="let notif of notifications().slice(0, 5)"
+           class="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50">
+        <div [class]="notif.read ? 'w-2 h-2 mt-2 rounded-full bg-gray-300 flex-shrink-0' : 'w-2 h-2 mt-2 rounded-full bg-primary-500 flex-shrink-0'"></div>
+        <div>
+          <p class="text-sm font-medium text-gray-800">{{ notif.title }}</p>
+          <p class="text-xs text-gray-500 mt-0.5">{{ notif.message }}</p>
+        </div>
+      </div>
+      <div *ngIf="notifications().length === 0" class="text-center py-4 text-gray-400 text-sm">
+        Aucune notification récente
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick actions -->
+  <div class="card">
+    <h2 class="text-base font-semibold text-gray-900 mb-4">Actions rapides</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <a routerLink="/payments/transfer" class="flex flex-col items-center gap-2 p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors text-center">
+        <span class="text-2xl">💸</span>
+        <span class="text-xs font-medium text-blue-700">Virement</span>
+      </a>
+      <a routerLink="/payments/mobile-money" class="flex flex-col items-center gap-2 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors text-center">
+        <span class="text-2xl">📱</span>
+        <span class="text-xs font-medium text-green-700">Mobile Money</span>
+      </a>
+      <a routerLink="/loans/apply" class="flex flex-col items-center gap-2 p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors text-center">
+        <span class="text-2xl">📋</span>
+        <span class="text-xs font-medium text-purple-700">Demande prêt</span>
+      </a>
+      <a routerLink="/documents" class="flex flex-col items-center gap-2 p-4 bg-orange-50 rounded-xl hover:bg-orange-100 transition-colors text-center">
+        <span class="text-2xl">📁</span>
+        <span class="text-xs font-medium text-orange-700">Documents</span>
+      </a>
+    </div>
+  </div>
+</div>

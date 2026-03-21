@@ -1,0 +1,60 @@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 p-4">
+  <div class="w-full max-w-md">
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur mb-4">
+        <span class="text-3xl">🏦</span>
+      </div>
+      <h1 class="text-2xl font-bold text-white">SMFP</h1>
+      <p class="text-primary-200 text-sm mt-1">Système de Management Financier et Paiements</p>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-6">Connexion</h2>
+
+      @if (error()) {
+        <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+          {{ error() }}
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-5">
+        <!-- Email -->
+        <div>
+          <label class="form-label">Adresse email</label>
+          <input type="email" formControlName="email" class="form-input"
+                 placeholder="vous@exemple.com" autocomplete="email">
+          @if (email.invalid && email.touched) {
+            <p class="text-xs text-red-600 mt-1">Email invalide</p>
+          }
+        </div>
+        <!-- Password -->
+        <div>
+          <label class="form-label">Mot de passe</label>
+          <div class="relative">
+            <input [type]="showPassword() ? 'text' : 'password'" formControlName="password"
+                   class="form-input pr-10" placeholder="••••••••" autocomplete="current-password">
+            <button type="button" (click)="showPassword.update(v => !v)"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-sm">
+              {{ showPassword() ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          @if (password.invalid && password.touched) {
+            <p class="text-xs text-red-600 mt-1">Minimum 6 caractères</p>
+          }
+        </div>
+
+        <button type="submit" [disabled]="loading()" class="btn-primary w-full">
+          @if (loading()) { <span class="animate-spin">⟳</span> }
+          {{ loading() ? 'Connexion...' : 'Se connecter' }}
+        </button>
+      </form>
+
+      <p class="text-center text-sm text-gray-500 mt-6">
+        Pas encore de compte ?
+        <a routerLink="/auth/register" class="text-primary-600 hover:underline font-medium">S'inscrire</a>
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,71 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Rapports</h1>
+      <p class="text-sm text-gray-500 mt-1">Consultez et téléchargez vos rapports</p>
+    </div>
+    <a routerLink="/reports/analytics"
+       class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+      Analytics →
+    </a>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading()" class="space-y-2">
+    <div *ngFor="let i of [1,2,3,4]" class="h-14 bg-gray-100 rounded-lg animate-pulse"></div>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
+    Erreur lors du chargement des rapports.
+  </div>
+
+  <!-- État vide -->
+  <div *ngIf="!loading() && data().length === 0 && !error()"
+       class="card text-center py-12 text-gray-400">
+    <span class="text-5xl block mb-3">📊</span>
+    <p class="font-medium">Aucun rapport disponible</p>
+  </div>
+
+  <!-- Tableau -->
+  <div *ngIf="!loading() && data().length > 0" class="card overflow-x-auto p-0">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="px-4 py-3 text-left font-semibold text-gray-600">Titre</th>
+          <th class="px-4 py-3 text-left font-semibold text-gray-600">Type</th>
+          <th class="px-4 py-3 text-left font-semibold text-gray-600">Période</th>
+          <th class="px-4 py-3 text-center font-semibold text-gray-600">Statut</th>
+          <th class="px-4 py-3 text-left font-semibold text-gray-600">Généré le</th>
+          <th class="px-4 py-3 text-center font-semibold text-gray-600">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <tr *ngFor="let report of data()" class="hover:bg-gray-50 transition-colors">
+          <td class="px-4 py-3 font-medium text-gray-900">{{ report.title ?? report.name }}</td>
+          <td class="px-4 py-3 text-gray-600">{{ report.type }}</td>
+          <td class="px-4 py-3 text-gray-500 text-xs">
+            {{ report.periodStart ? (report.periodStart | date:'dd/MM/yyyy') : '-' }}
+            <ng-container *ngIf="report.periodEnd"> – {{ report.periodEnd | date:'dd/MM/yyyy' }}</ng-container>
+          </td>
+          <td class="px-4 py-3 text-center">
+            <span [class]="report.status === 'READY'
+              ? 'inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700'
+              : 'inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700'">
+              {{ report.status }}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-gray-500 text-xs">
+            {{ report.generatedAt | date:'dd/MM/yyyy HH:mm' }}
+          </td>
+          <td class="px-4 py-3 text-center">
+            <button *ngIf="report.status === 'READY'"
+                    class="text-xs text-blue-600 hover:underline">
+              Télécharger
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
