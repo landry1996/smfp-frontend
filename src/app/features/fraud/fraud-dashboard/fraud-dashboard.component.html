@@ -1,90 +1,130 @@
-<div class="space-y-6">
-  <div>
-    <h1 class="text-2xl font-bold text-gray-900">Tableau de bord – Fraude</h1>
-    <p class="text-sm text-gray-500 mt-1">Vue d'ensemble de la détection de fraude</p>
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+  <h4 class="fw-bold mb-0"><i class="bi bi-shield-exclamation me-2 text-danger"></i>Tableau de bord – Fraude</h4>
+  <div class="d-flex gap-2">
+    <a routerLink="/fraud/alerts" class="btn btn-outline-danger btn-sm">
+      <i class="bi bi-bell me-1"></i>Alertes
+    </a>
+    <a routerLink="/fraud/rules" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-sliders me-1"></i>Regles
+    </a>
   </div>
+</div>
 
-  <!-- Skeleton KPIs -->
-  <div *ngIf="loading()" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-    <div *ngFor="let i of [1,2,3,4]" class="h-24 bg-gray-100 rounded-xl animate-pulse"></div>
+<!-- Loading -->
+@if (loading()) {
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-danger" role="status"><span class="visually-hidden">Chargement...</span></div>
   </div>
+}
 
-  <!-- KPIs -->
-  <div *ngIf="!loading() && overview() as ov" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-    <div class="card border-l-4 border-red-400">
-      <p class="text-sm text-gray-500 mb-1">Alertes ouvertes</p>
-      <p class="text-3xl font-bold text-red-600">{{ ov.openAlerts ?? 0 }}</p>
-      <p class="text-xs text-gray-400 mt-1">{{ ov.criticalAlerts ?? 0 }} critique(s)</p>
-    </div>
-    <div class="card border-l-4 border-orange-400">
-      <p class="text-sm text-gray-500 mb-1">Transactions analysées</p>
-      <p class="text-3xl font-bold text-gray-900">{{ ov.totalChecks ?? 0 }}</p>
-      <p class="text-xs text-gray-400 mt-1">aujourd'hui</p>
-    </div>
-    <div class="card border-l-4 border-yellow-400">
-      <p class="text-sm text-gray-500 mb-1">Taux de fraude</p>
-      <p class="text-3xl font-bold text-yellow-600">{{ ((ov.fraudRate ?? 0) * 100).toFixed(2) }}%</p>
-      <p class="text-xs text-gray-400 mt-1">sur 30 jours</p>
-    </div>
-    <div class="card border-l-4 border-green-400">
-      <p class="text-sm text-gray-500 mb-1">Règles actives</p>
-      <p class="text-3xl font-bold text-green-600">{{ ov.activeRules ?? 0 }}</p>
-      <p class="text-xs text-gray-400 mt-1">règles configurées</p>
-    </div>
+<!-- Error -->
+@if (error()) {
+  <div class="alert alert-danger d-flex align-items-center gap-2">
+    <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+    <span>Impossible de charger le tableau de bord.</span>
   </div>
+}
 
-  <!-- Grille alertes + navigation -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-    <!-- Alertes récentes -->
-    <div class="card">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-base font-semibold text-gray-900">Alertes récentes</h2>
-        <a routerLink="/fraud/alerts" class="text-sm text-blue-600 hover:underline">Voir tout →</a>
-      </div>
-      <div *ngIf="recentAlerts().length === 0" class="text-center py-6 text-gray-400 text-sm">
-        Aucune alerte récente
-      </div>
-      <div class="space-y-2">
-        <div *ngFor="let alert of recentAlerts()"
-             class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+@if (!loading() && overview()) {
+  <!-- KPI cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="smfp-kpi-icon smfp-kpi-blue"><i class="bi bi-activity"></i></div>
           <div>
-            <p class="text-sm font-medium text-gray-900">{{ alert.type ?? alert.ruleCode }}</p>
-            <p class="text-xs text-gray-500">{{ alert.transactionId ?? '-' }}</p>
+            <div class="smfp-kpi-value">{{ overview()!.totalChecks | number }}</div>
+            <div class="smfp-kpi-label">Checks totaux</div>
           </div>
-          <span [class]="alert.riskLevel | statusBadge">{{ alert.riskLevel }}</span>
         </div>
       </div>
     </div>
-
-    <!-- Navigation rapide -->
-    <div class="card">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-base font-semibold text-gray-900">Navigation rapide</h2>
-      </div>
-      <div class="space-y-2">
-        <a routerLink="/fraud/alerts"
-           class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
-          <span class="text-sm font-medium text-gray-700">Alertes fraude</span>
-          <span class="text-gray-400">→</span>
-        </a>
-        <a routerLink="/fraud/rules"
-           class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
-          <span class="text-sm font-medium text-gray-700">Règles de détection</span>
-          <span class="text-gray-400">→</span>
-        </a>
-        <a routerLink="/fraud/patterns"
-           class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
-          <span class="text-sm font-medium text-gray-700">Patterns de fraude</span>
-          <span class="text-gray-400">→</span>
-        </a>
+    <div class="col-6 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="smfp-kpi-icon smfp-kpi-red"><i class="bi bi-bell-fill"></i></div>
+          <div>
+            <div class="smfp-kpi-value">{{ overview()!.openAlerts }}</div>
+            <div class="smfp-kpi-label">Alertes ouvertes</div>
+          </div>
+        </div>
       </div>
     </div>
-
+    <div class="col-6 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="smfp-kpi-icon smfp-kpi-yellow"><i class="bi bi-exclamation-triangle-fill"></i></div>
+          <div>
+            <div class="smfp-kpi-value">{{ overview()!.criticalAlerts }}</div>
+            <div class="smfp-kpi-label">Alertes critiques</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="smfp-kpi-icon smfp-kpi-red"><i class="bi bi-percent"></i></div>
+          <div>
+            <div class="smfp-kpi-value">{{ (overview()!.fraudRate * 100) | number:'1.1-1' }}%</div>
+            <div class="smfp-kpi-label">Taux de fraude</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Erreur -->
-  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
-    Erreur lors du chargement du tableau de bord fraude.
+  <!-- Recent alerts -->
+  <div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+      <h6 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-danger"></i>Alertes recentes</h6>
+      <a routerLink="/fraud/alerts" class="btn btn-outline-danger btn-sm">Voir tout</a>
+    </div>
+    <div class="card-body p-0">
+      @if (recentAlerts().length === 0) {
+        <div class="text-center py-4 text-muted">
+          <i class="bi bi-check-circle fs-2 d-block mb-2 opacity-25"></i>
+          <p class="mb-0 small">Aucune alerte recente.</p>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4">Transaction</th>
+                <th>Niveau de risque</th>
+                <th>Statut</th>
+                <th class="pe-4">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (alert of recentAlerts(); track alert.id) {
+                <tr>
+                  <td class="ps-4"><code class="small">{{ alert.transactionId ?? alert.id }}</code></td>
+                  <td>
+                    @switch (alert.riskLevel) {
+                      @case ('CRITICAL') { <span class="badge bg-danger">Critique</span> }
+                      @case ('HIGH')     { <span class="badge bg-warning text-dark">Eleve</span> }
+                      @case ('MEDIUM')   { <span class="badge bg-info text-dark">Moyen</span> }
+                      @default           { <span class="badge bg-secondary">Faible</span> }
+                    }
+                  </td>
+                  <td>
+                    @switch (alert.status) {
+                      @case ('NEW')          { <span class="badge bg-danger">Nouveau</span> }
+                      @case ('ACKNOWLEDGED') { <span class="badge bg-warning text-dark">Reconnu</span> }
+                      @case ('RESOLVED')     { <span class="badge bg-success">Resolu</span> }
+                      @default               { <span class="badge bg-secondary">{{ alert.status }}</span> }
+                    }
+                  </td>
+                  <td class="pe-4 text-muted small">{{ alert.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
   </div>
-</div>
+}

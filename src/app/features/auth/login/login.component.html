@@ -1,60 +1,78 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 p-4">
-  <div class="w-full max-w-md">
-    <!-- Logo -->
-    <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur mb-4">
-        <span class="text-3xl">🏦</span>
-      </div>
-      <h1 class="text-2xl font-bold text-white">SMFP</h1>
-      <p class="text-primary-200 text-sm mt-1">Système de Management Financier et Paiements</p>
+<div class="smfp-auth-page d-flex align-items-center justify-content-center min-vh-100 p-3">
+  <div class="w-100" style="max-width:440px">
+
+    <div class="text-center mb-4">
+      <div class="smfp-auth-logo mx-auto mb-3"><i class="bi bi-bank2 fs-2"></i></div>
+      <h1 class="fw-bold text-white fs-3 mb-1">SMFP</h1>
+      <p class="text-white-50 small mb-0">Système de Management Financier et Paiements</p>
     </div>
 
-    <!-- Card -->
-    <div class="bg-white rounded-2xl shadow-2xl p-8">
-      <h2 class="text-xl font-semibold text-gray-900 mb-6">Connexion</h2>
+    <div class="card shadow-lg border-0 rounded-4">
+      <div class="card-body p-4 p-md-5">
 
-      @if (error()) {
-        <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-          {{ error() }}
-        </div>
-      }
+        <h2 class="fw-bold mb-1 text-center" style="font-size:1.35rem">Connexion</h2>
+        <p class="text-muted text-center small mb-4">Accédez à votre espace sécurisé</p>
 
-      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-5">
-        <!-- Email -->
-        <div>
-          <label class="form-label">Adresse email</label>
-          <input type="email" formControlName="email" class="form-input"
-                 placeholder="vous@exemple.com" autocomplete="email">
-          @if (email.invalid && email.touched) {
-            <p class="text-xs text-red-600 mt-1">Email invalide</p>
-          }
-        </div>
-        <!-- Password -->
-        <div>
-          <label class="form-label">Mot de passe</label>
-          <div class="relative">
-            <input [type]="showPassword() ? 'text' : 'password'" formControlName="password"
-                   class="form-input pr-10" placeholder="••••••••" autocomplete="current-password">
-            <button type="button" (click)="showPassword.update(v => !v)"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-sm">
-              {{ showPassword() ? '🙈' : '👁️' }}
-            </button>
+        @if (error()) {
+          <div class="alert alert-danger d-flex align-items-center gap-2 py-2">
+            <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+            <span>{{ error() }}</span>
           </div>
-          @if (password.invalid && password.touched) {
-            <p class="text-xs text-red-600 mt-1">Minimum 6 caractères</p>
-          }
+        }
+
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+          <div class="form-floating mb-3">
+            <input type="email" id="loginEmail" class="form-control" placeholder="email"
+                   formControlName="email"
+                   [class.is-invalid]="email.invalid && email.touched">
+            <label for="loginEmail"><i class="bi bi-envelope me-1"></i>Adresse e-mail</label>
+            @if (email.invalid && email.touched) {
+              <div class="invalid-feedback">E-mail invalide.</div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <div class="input-group">
+              <div class="form-floating flex-grow-1">
+                <input [type]="showPassword() ? 'text' : 'password'"
+                       id="loginPassword" class="form-control border-end-0 rounded-end-0"
+                       placeholder="Mot de passe" formControlName="password"
+                       [class.is-invalid]="password.invalid && password.touched">
+                <label for="loginPassword"><i class="bi bi-lock me-1"></i>Mot de passe</label>
+              </div>
+              <button type="button" class="btn btn-outline-secondary border-start-0 rounded-start-0"
+                      (click)="showPassword.set(!showPassword())" tabindex="-1">
+                <i [class]="showPassword() ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+              </button>
+            </div>
+            @if (password.invalid && password.touched) {
+              <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>Min. 6 caractères.</div>
+            }
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mb-3" [disabled]="loading()">
+            @if (loading()) {
+              <span class="spinner-border spinner-border-sm me-2"></span>Connexion en cours...
+            } @else {
+              <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+            }
+          </button>
+
+        </form>
+
+        <div class="text-center">
+          <small class="text-muted">Pas encore de compte ?
+            <a routerLink="/auth/register" class="fw-semibold text-decoration-none">S'inscrire</a>
+          </small>
         </div>
 
-        <button type="submit" [disabled]="loading()" class="btn-primary w-full">
-          @if (loading()) { <span class="animate-spin">⟳</span> }
-          {{ loading() ? 'Connexion...' : 'Se connecter' }}
-        </button>
-      </form>
-
-      <p class="text-center text-sm text-gray-500 mt-6">
-        Pas encore de compte ?
-        <a routerLink="/auth/register" class="text-primary-600 hover:underline font-medium">S'inscrire</a>
-      </p>
+      </div>
     </div>
+
+    <p class="text-center text-white-50 small mt-3">
+      <i class="bi bi-lock-fill me-1"></i>Connexion sécurisée SSL 256-bit
+    </p>
+
   </div>
 </div>

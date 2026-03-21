@@ -1,64 +1,95 @@
-<div class="space-y-6">
-  <div class="flex items-center gap-3">
-    <a routerLink="/fraud" class="text-sm text-gray-500 hover:text-gray-700">← Fraude</a>
-    <span class="text-gray-300">/</span>
-    <h1 class="text-2xl font-bold text-gray-900">Alertes de fraude</h1>
-  </div>
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/dashboard" class="text-decoration-none">Accueil</a></li>
+    <li class="breadcrumb-item"><a routerLink="/fraud" class="text-decoration-none">Fraude</a></li>
+    <li class="breadcrumb-item active">Alertes</li>
+  </ol>
+</nav>
 
-  <!-- Skeleton -->
-  <div *ngIf="loading()" class="space-y-2">
-    <div *ngFor="let i of [1,2,3,4,5]" class="h-14 bg-gray-100 rounded-lg animate-pulse"></div>
-  </div>
-
-  <!-- Erreur -->
-  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
-    Erreur lors du chargement des alertes.
-  </div>
-
-  <!-- État vide -->
-  <div *ngIf="!loading() && data().length === 0 && !error()"
-       class="card text-center py-12 text-gray-400">
-    <span class="text-5xl block mb-3">🛡️</span>
-    <p class="font-medium">Aucune alerte de fraude</p>
-  </div>
-
-  <!-- Tableau des alertes -->
-  <div *ngIf="!loading() && data().length > 0" class="card overflow-x-auto p-0">
-    <table class="w-full text-sm">
-      <thead class="bg-gray-50 border-b border-gray-200">
-        <tr>
-          <th class="px-4 py-3 text-left font-semibold text-gray-600">ID Alerte</th>
-          <th class="px-4 py-3 text-left font-semibold text-gray-600">Transaction</th>
-          <th class="px-4 py-3 text-left font-semibold text-gray-600">Règle déclenchée</th>
-          <th class="px-4 py-3 text-center font-semibold text-gray-600">Risque</th>
-          <th class="px-4 py-3 text-center font-semibold text-gray-600">Statut</th>
-          <th class="px-4 py-3 text-left font-semibold text-gray-600">Date</th>
-          <th class="px-4 py-3 text-center font-semibold text-gray-600">Actions</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100">
-        <tr *ngFor="let alert of data()" class="hover:bg-gray-50 transition-colors">
-          <td class="px-4 py-3 font-mono text-xs text-gray-500">{{ alert.id }}</td>
-          <td class="px-4 py-3 font-mono text-xs text-gray-700">{{ alert.transactionId ?? '-' }}</td>
-          <td class="px-4 py-3 text-gray-700">{{ alert.ruleCode ?? alert.type ?? '-' }}</td>
-          <td class="px-4 py-3 text-center">
-            <span [class]="alert.riskLevel | statusBadge">{{ alert.riskLevel }}</span>
-          </td>
-          <td class="px-4 py-3 text-center">
-            <span [class]="alert.status | statusBadge">{{ alert.status }}</span>
-          </td>
-          <td class="px-4 py-3 text-gray-500 text-xs">
-            {{ alert.createdAt | date:'dd/MM/yyyy HH:mm' }}
-          </td>
-          <td class="px-4 py-3 text-center">
-            <button (click)="resolve(alert)"
-                    *ngIf="alert.status === 'NEW' || alert.status === 'ACKNOWLEDGED'"
-                    class="text-xs text-blue-600 hover:underline">
-              Résoudre
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+  <h4 class="fw-bold mb-0"><i class="bi bi-bell me-2 text-danger"></i>Alertes de fraude</h4>
 </div>
+
+<!-- Loading -->
+@if (loading()) {
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-danger" role="status"><span class="visually-hidden">Chargement...</span></div>
+  </div>
+}
+
+<!-- Error -->
+@if (error()) {
+  <div class="alert alert-danger d-flex align-items-center gap-2">
+    <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+    <span>Impossible de charger les alertes.</span>
+  </div>
+}
+
+<!-- Empty -->
+@if (!loading() && !error() && data().length === 0) {
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-shield-check fs-1 d-block mb-3 opacity-25"></i>
+    <p class="mb-0 fw-semibold">Aucune alerte de fraude</p>
+  </div>
+}
+
+<!-- Table -->
+@if (!loading() && data().length > 0) {
+  <div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-4">Transaction</th>
+              <th>Utilisateur</th>
+              <th>Type / Regle</th>
+              <th>Niveau de risque</th>
+              <th>Statut</th>
+              <th>Date</th>
+              <th class="pe-4">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (alert of data(); track alert.id) {
+              <tr>
+                <td class="ps-4"><code class="small">{{ alert.transactionId ?? '—' }}</code></td>
+                <td class="small text-muted">{{ alert.userId ?? '—' }}</td>
+                <td><span class="badge bg-light text-dark border">{{ alert.type ?? alert.ruleCode ?? '—' }}</span></td>
+                <td>
+                  @switch (alert.riskLevel) {
+                    @case ('CRITICAL') { <span class="badge bg-danger">Critique</span> }
+                    @case ('HIGH')     { <span class="badge bg-warning text-dark">Eleve</span> }
+                    @case ('MEDIUM')   { <span class="badge bg-info text-dark">Moyen</span> }
+                    @default           { <span class="badge bg-secondary">Faible</span> }
+                  }
+                </td>
+                <td>
+                  @switch (alert.status) {
+                    @case ('NEW')          { <span class="badge bg-danger">Nouveau</span> }
+                    @case ('ACKNOWLEDGED') { <span class="badge bg-warning text-dark">Reconnu</span> }
+                    @case ('RESOLVED')     { <span class="badge bg-success">Resolu</span> }
+                    @case ('CLOSED')       { <span class="badge bg-secondary">Clos</span> }
+                    @default               { <span class="badge bg-light text-dark border">{{ alert.status }}</span> }
+                  }
+                </td>
+                <td class="text-muted small">{{ alert.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td class="pe-4">
+                  @if (alert.status === 'NEW' || alert.status === 'ACKNOWLEDGED') {
+                    <button class="btn btn-outline-success btn-sm" (click)="resolve(alert)">
+                      <i class="bi bi-check-lg me-1"></i>Resoudre
+                    </button>
+                  } @else {
+                    <span class="text-muted small">—</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+}

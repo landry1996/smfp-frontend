@@ -1,54 +1,82 @@
-<div class="space-y-6">
-  <div class="flex items-center gap-3">
-    <a routerLink="/workflow" class="text-sm text-gray-500 hover:text-gray-700">← Tâches</a>
-    <span class="text-gray-300">/</span>
-    <h1 class="text-2xl font-bold text-gray-900">Approbations</h1>
-  </div>
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/dashboard" class="text-decoration-none">Accueil</a></li>
+    <li class="breadcrumb-item"><a routerLink="/workflow" class="text-decoration-none">Taches</a></li>
+    <li class="breadcrumb-item active">Approbations</li>
+  </ol>
+</nav>
 
-  <!-- Skeleton -->
-  <div *ngIf="loading()" class="space-y-3">
-    <div *ngFor="let i of [1,2,3]" class="h-20 bg-gray-100 rounded-xl animate-pulse"></div>
-  </div>
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+  <h4 class="fw-bold mb-0"><i class="bi bi-check-circle me-2 text-success"></i>Approbations en attente</h4>
+  <span class="badge bg-warning text-dark">{{ data().length }} demande(s)</span>
+</div>
 
-  <!-- Erreur -->
-  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
-    Erreur lors du chargement des approbations.
+<!-- Loading -->
+@if (loading()) {
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div>
   </div>
+}
 
-  <!-- État vide -->
-  <div *ngIf="!loading() && data().length === 0 && !error()"
-       class="card text-center py-12 text-gray-400">
-    <span class="text-5xl block mb-3">✍️</span>
-    <p class="font-medium">Aucune demande d'approbation en attente</p>
+<!-- Error -->
+@if (error()) {
+  <div class="alert alert-danger d-flex align-items-center gap-2">
+    <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+    <span>Impossible de charger les approbations.</span>
   </div>
+}
 
-  <!-- Liste des approbations -->
-  <div class="space-y-4">
-    <div *ngFor="let approval of data()" class="card">
-      <div class="flex items-start justify-between gap-3">
-        <div class="flex-1">
-          <div class="flex items-center gap-2">
-            <p class="font-semibold text-gray-900">{{ approval.subject ?? approval.workflowType }}</p>
-          </div>
-          <p class="text-sm text-gray-500 mt-1">{{ approval.description ?? '-' }}</p>
-          <div class="mt-2 flex items-center gap-4 text-xs text-gray-400">
-            <span>Demandeur: {{ approval.requestedBy ?? '-' }}</span>
-            <span>{{ approval.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+<!-- Empty -->
+@if (!loading() && !error() && data().length === 0) {
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-check-all fs-1 d-block mb-3 opacity-25"></i>
+    <p class="mb-0 fw-semibold">Aucune approbation en attente</p>
+  </div>
+}
+
+<!-- Approval cards -->
+@if (!loading() && data().length > 0) {
+  <div class="d-flex flex-column gap-3">
+    @for (approval of data(); track approval.id) {
+      <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div class="flex-grow-1">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <h6 class="fw-bold mb-0">{{ approval.subject ?? approval.workflowType ?? 'Demande' }}</h6>
+                @switch (approval.status) {
+                  @case ('PENDING')  { <span class="badge bg-warning text-dark">En attente</span> }
+                  @case ('APPROVED') { <span class="badge bg-success">Approuve</span> }
+                  @case ('REJECTED') { <span class="badge bg-danger">Rejete</span> }
+                  @default           { <span class="badge bg-secondary">{{ approval.status }}</span> }
+                }
+              </div>
+              @if (approval.description) {
+                <p class="text-muted small mb-2">{{ approval.description }}</p>
+              }
+              <div class="d-flex gap-3 small text-muted flex-wrap">
+                @if (approval.requestedBy) {
+                  <span><i class="bi bi-person me-1"></i>{{ approval.requestedBy }}</span>
+                }
+                <span><i class="bi bi-calendar me-1"></i>{{ approval.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            </div>
+
+            @if (approval.status === 'PENDING') {
+              <div class="d-flex gap-2">
+                <button class="btn btn-success btn-sm px-3" (click)="decide(approval, 'APPROVED')">
+                  <i class="bi bi-check-lg me-1"></i>Approuver
+                </button>
+                <button class="btn btn-outline-danger btn-sm px-3" (click)="decide(approval, 'REJECTED')">
+                  <i class="bi bi-x-lg me-1"></i>Rejeter
+                </button>
+              </div>
+            }
           </div>
         </div>
-        <span [class]="approval.status | statusBadge" class="flex-shrink-0">{{ approval.status }}</span>
       </div>
-
-      <div *ngIf="approval.status === 'PENDING'" class="mt-4 flex gap-3">
-        <button (click)="decide(approval, 'APPROVED')"
-                class="flex-1 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
-          Approuver
-        </button>
-        <button (click)="decide(approval, 'REJECTED')"
-                class="flex-1 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors">
-          Rejeter
-        </button>
-      </div>
-    </div>
+    }
   </div>
-</div>
+}

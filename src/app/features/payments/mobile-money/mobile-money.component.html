@@ -1,73 +1,108 @@
-<div class="space-y-6 max-w-2xl mx-auto">
-  <div class="flex items-center gap-3">
-    <a routerLink="/payments" class="text-sm text-gray-500 hover:text-gray-700">← Retour</a>
-    <span class="text-gray-300">/</span>
-    <h1 class="text-2xl font-bold text-gray-900">Mobile Money</h1>
-  </div>
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/dashboard" class="text-decoration-none">Accueil</a></li>
+    <li class="breadcrumb-item"><a routerLink="/payments" class="text-decoration-none">Paiements</a></li>
+    <li class="breadcrumb-item active">Mobile Money</li>
+  </ol>
+</nav>
 
-  <!-- Sélection de l'opérateur -->
-  <div class="grid grid-cols-3 gap-3">
-    <button *ngFor="let op of operators"
-            (click)="selectOperator(op.code)"
-            [class]="selectedProvider() === op.code
-              ? 'card border-2 border-blue-500 text-center cursor-pointer'
-              : 'card border-2 border-transparent text-center cursor-pointer hover:border-gray-300'">
-      <span class="text-3xl block">{{ op.icon }}</span>
-      <p class="text-xs font-medium text-gray-700 mt-1">{{ op.name }}</p>
-    </button>
-  </div>
+<div style="max-width:600px">
+  <div class="card border-0 shadow-sm rounded-3">
 
-  <div class="card">
-    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+    <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+      <h5 class="fw-bold mb-0"><i class="bi bi-phone me-2 text-warning"></i>Mobile Money</h5>
+      <p class="text-muted small mt-1">Effectuez un retrait ou un paiement via Mobile Money.</p>
+    </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Compte débiteur (ID)</label>
-        <input formControlName="accountId" type="text"
-               placeholder="Identifiant du compte source"
-               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-      </div>
+    <div class="card-body p-4">
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Numéro de téléphone</label>
-        <div class="flex">
-          <span class="px-3 py-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg text-sm text-gray-600">+237</span>
-          <input formControlName="phoneNumber" type="tel"
-                 placeholder="6XX XXX XXX"
-                 class="flex-1 px-3 py-2 border border-gray-300 rounded-r-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <!-- Operator selector -->
+      <div class="mb-4">
+        <label class="form-label fw-semibold small text-muted text-uppercase">Opérateur</label>
+        <div class="row g-2">
+          @for (op of operators; track op.code) {
+            <div class="col-4">
+              <div class="card border rounded-3 text-center p-3 smfp-operator-card"
+                   [class.selected]="selectedProvider() === op.code"
+                   (click)="selectOperator(op.code)"
+                   style="cursor:pointer">
+                <div class="fs-2 mb-1">{{ op.icon }}</div>
+                <div class="small fw-semibold" style="font-size:.72rem">{{ op.name }}</div>
+              </div>
+            </div>
+          }
         </div>
-        <p *ngIf="form.get('phoneNumber')?.invalid && form.get('phoneNumber')?.touched"
-           class="text-xs text-red-500 mt-1">Format invalide (ex: 6XXXXXXXX)</p>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Montant (XAF)</label>
-        <input formControlName="amount" type="number" min="100"
-               placeholder="0"
-               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-      </div>
+      @if (success()) {
+        <div class="alert alert-success d-flex align-items-center gap-2">
+          <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+          <span>Transaction envoyée avec succès ! Redirection...</span>
+        </div>
+      }
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Motif</label>
-        <input formControlName="description" type="text"
-               placeholder="Objet du transfert"
-               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-      </div>
+      @if (apiError()) {
+        <div class="alert alert-danger d-flex align-items-center gap-2">
+          <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+          <span>{{ apiError() }}</span>
+        </div>
+      }
 
-      <div *ngIf="success()"
-           class="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
-        Transaction Mobile Money effectuée !
-      </div>
-      <div *ngIf="apiError()"
-           class="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-        {{ apiError() }}
-      </div>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
 
-      <button type="submit"
-              [disabled]="form.invalid || submitting() || !selectedProvider()"
-              class="w-full py-2.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-        {{ submitting() ? 'Envoi...' : 'Envoyer via Mobile Money' }}
-      </button>
+        <div class="form-floating mb-3">
+          <input type="text" id="mmAccountId" class="form-control" placeholder="ID Compte"
+                 formControlName="accountId"
+                 [class.is-invalid]="form.get('accountId')!.invalid && form.get('accountId')!.touched">
+          <label for="mmAccountId"><i class="bi bi-bank2 me-1"></i>Compte source (ID)</label>
+          @if (form.get('accountId')!.invalid && form.get('accountId')!.touched) {
+            <div class="invalid-feedback">Requis.</div>
+          }
+        </div>
 
-    </form>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Numéro de téléphone</label>
+          <div class="input-group">
+            <span class="input-group-text fw-semibold">+237</span>
+            <input type="tel" class="form-control" placeholder="6XXXXXXXX"
+                   formControlName="phoneNumber"
+                   [class.is-invalid]="form.get('phoneNumber')!.invalid && form.get('phoneNumber')!.touched">
+            @if (form.get('phoneNumber')!.invalid && form.get('phoneNumber')!.touched) {
+              <div class="invalid-feedback">Format invalide (ex: 699000000).</div>
+            }
+          </div>
+        </div>
+
+        <div class="form-floating mb-3">
+          <input type="number" id="mmAmount" class="form-control" placeholder="Montant" min="100"
+                 formControlName="amount"
+                 [class.is-invalid]="form.get('amount')!.invalid && form.get('amount')!.touched">
+          <label for="mmAmount"><i class="bi bi-cash me-1"></i>Montant (XAF)</label>
+          @if (form.get('amount')!.invalid && form.get('amount')!.touched) {
+            <div class="invalid-feedback">Min. 100 XAF.</div>
+          }
+        </div>
+
+        <div class="form-floating mb-4">
+          <input type="text" id="mmDesc" class="form-control" placeholder="Description"
+                 formControlName="description">
+          <label for="mmDesc">Description (optionnel)</label>
+        </div>
+
+        <div class="d-flex gap-3">
+          <button type="submit" class="btn btn-warning text-dark fw-bold flex-grow-1 py-3"
+                  [disabled]="submitting() || !selectedProvider()">
+            @if (submitting()) {
+              <span class="spinner-border spinner-border-sm me-2"></span>Traitement...
+            } @else {
+              <i class="bi bi-send me-2"></i>Envoyer
+            }
+          </button>
+          <a routerLink="/payments" class="btn btn-outline-secondary px-4">Annuler</a>
+        </div>
+
+      </form>
+    </div>
   </div>
 </div>

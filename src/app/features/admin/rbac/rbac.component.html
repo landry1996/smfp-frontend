@@ -1,48 +1,93 @@
-<div class="space-y-6">
-  <div class="flex items-center gap-3">
-    <a routerLink="/admin" class="text-sm text-gray-500 hover:text-gray-700">← Utilisateurs</a>
-    <span class="text-gray-300">/</span>
-    <h1 class="text-2xl font-bold text-gray-900">Contrôle d'accès (RBAC)</h1>
-  </div>
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/dashboard" class="text-decoration-none">Accueil</a></li>
+    <li class="breadcrumb-item"><a routerLink="/admin/users" class="text-decoration-none">Utilisateurs</a></li>
+    <li class="breadcrumb-item active">Roles & Permissions</li>
+  </ol>
+</nav>
 
-  <!-- Skeleton -->
-  <div *ngIf="loading()" class="space-y-3">
-    <div *ngFor="let i of [1,2,3]" class="h-24 bg-gray-100 rounded-xl animate-pulse"></div>
-  </div>
-
-  <!-- Erreur -->
-  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
-    Erreur lors du chargement des rôles et permissions.
-  </div>
-
-  <!-- État vide -->
-  <div *ngIf="!loading() && data().length === 0 && !error()"
-       class="card text-center py-12 text-gray-400">
-    <span class="text-5xl block mb-3">🔐</span>
-    <p class="font-medium">Aucun rôle configuré</p>
-  </div>
-
-  <!-- Liste des rôles -->
-  <div *ngIf="!loading() && data().length > 0" class="space-y-4">
-    <div *ngFor="let role of data()" class="card">
-      <div class="flex items-start justify-between">
-        <div>
-          <p class="font-semibold text-gray-900 text-base">{{ role.displayName }}</p>
-          <p class="text-sm text-gray-500 mt-0.5">{{ role.description ?? '-' }}</p>
-        </div>
-        <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
-          {{ role.permissionCount }} permission(s)
-        </span>
-      </div>
-      <div *ngIf="role.permissionCodes?.length" class="mt-4">
-        <p class="text-xs text-gray-400 uppercase mb-2">Permissions</p>
-        <div class="flex flex-wrap gap-1.5">
-          <span *ngFor="let perm of role.permissionCodes"
-                class="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 font-mono">
-            {{ perm }}
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+  <h4 class="fw-bold mb-0"><i class="bi bi-shield-lock me-2 text-primary"></i>Roles & Permissions (RBAC)</h4>
 </div>
+
+<!-- Loading -->
+@if (loading()) {
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div>
+  </div>
+}
+
+<!-- Error -->
+@if (error()) {
+  <div class="alert alert-danger d-flex align-items-center gap-2">
+    <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+    <span>Impossible de charger les roles.</span>
+  </div>
+}
+
+<!-- Empty -->
+@if (!loading() && !error() && data().length === 0) {
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-shield-lock fs-1 d-block mb-3 opacity-25"></i>
+    <p class="mb-0 fw-semibold">Aucun role configure</p>
+  </div>
+}
+
+<!-- Role cards -->
+@if (!loading() && data().length > 0) {
+  <div class="row g-3">
+    @for (role of data(); track role.id) {
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <h6 class="fw-bold mb-1">{{ role.displayName }}</h6>
+                <code class="small text-muted">{{ role.role }}</code>
+              </div>
+              <div class="d-flex flex-column align-items-end gap-1">
+                @if (role.isSystem) {
+                  <span class="badge bg-primary">Systeme</span>
+                }
+                @if (role.isActive) {
+                  <span class="badge bg-success">Actif</span>
+                } @else {
+                  <span class="badge bg-secondary">Inactif</span>
+                }
+              </div>
+            </div>
+
+            @if (role.description) {
+              <p class="small text-muted mb-3">{{ role.description }}</p>
+            }
+
+            <div class="mb-3">
+              <div class="small text-muted mb-2">
+                <i class="bi bi-key me-1"></i>{{ role.permissionCount }} permission(s)
+                <span class="ms-2">
+                  <i class="bi bi-bar-chart me-1"></i>Niveau {{ role.hierarchyLevel }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Permission badges (max 6) -->
+            @if (role.permissionCodes && role.permissionCodes.length > 0) {
+              <div class="d-flex flex-wrap gap-1">
+                @for (perm of role.permissionCodes.slice(0, 6); track perm) {
+                  <span class="badge bg-light text-dark border" style="font-size:.65rem">{{ perm }}</span>
+                }
+                @if (role.permissionCodes.length > 6) {
+                  <span class="badge bg-light text-primary border" style="font-size:.65rem">
+                    +{{ role.permissionCodes.length - 6 }} autres
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}

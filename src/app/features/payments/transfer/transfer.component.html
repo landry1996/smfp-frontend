@@ -1,68 +1,86 @@
-<div class="space-y-6 max-w-2xl mx-auto">
-  <div class="flex items-center gap-3">
-    <a routerLink="/payments" class="text-sm text-gray-500 hover:text-gray-700">← Retour</a>
-    <span class="text-gray-300">/</span>
-    <h1 class="text-2xl font-bold text-gray-900">Virement bancaire</h1>
-  </div>
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/dashboard" class="text-decoration-none">Accueil</a></li>
+    <li class="breadcrumb-item"><a routerLink="/payments" class="text-decoration-none">Paiements</a></li>
+    <li class="breadcrumb-item active">Nouveau virement</li>
+  </ol>
+</nav>
 
-  <div class="card">
-    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+<div style="max-width:600px">
+  <div class="card border-0 shadow-sm rounded-3">
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Compte débiteur (ID)</label>
-        <input formControlName="fromAccountId" type="text"
-               placeholder="Identifiant du compte source"
-               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <p *ngIf="form.get('fromAccountId')?.invalid && form.get('fromAccountId')?.touched"
-           class="text-xs text-red-500 mt-1">Champ obligatoire</p>
-      </div>
+    <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+      <h5 class="fw-bold mb-0"><i class="bi bi-send me-2 text-primary"></i>Virement bancaire</h5>
+      <p class="text-muted small mt-1">Transférez des fonds entre comptes en toute sécurité.</p>
+    </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Compte bénéficiaire (ID)</label>
-        <input formControlName="toAccountId" type="text"
-               placeholder="Identifiant du compte destinataire"
-               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <p *ngIf="form.get('toAccountId')?.invalid && form.get('toAccountId')?.touched"
-           class="text-xs text-red-500 mt-1">Champ obligatoire</p>
-      </div>
+    <div class="card-body p-4">
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Montant (XAF)</label>
-        <input formControlName="amount" type="number" min="100"
-               placeholder="0"
-               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <p *ngIf="form.get('amount')?.hasError('min') && form.get('amount')?.touched"
-           class="text-xs text-red-500 mt-1">Montant minimum : 100 XAF</p>
-      </div>
+      @if (success()) {
+        <div class="alert alert-success d-flex align-items-center gap-2">
+          <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+          <span>Virement effectué avec succès ! Redirection...</span>
+        </div>
+      }
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Motif du virement</label>
-        <input formControlName="description" type="text"
-               placeholder="Objet du transfert"
-               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-      </div>
+      @if (apiError()) {
+        <div class="alert alert-danger d-flex align-items-center gap-2">
+          <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+          <span>{{ apiError() }}</span>
+        </div>
+      }
 
-      <div *ngIf="success()"
-           class="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
-        Virement effectué avec succès !
-      </div>
-      <div *ngIf="apiError()"
-           class="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-        {{ apiError() }}
-      </div>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
 
-      <div class="flex gap-3 pt-2">
-        <button type="submit"
-                [disabled]="form.invalid || submitting()"
-                class="flex-1 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-          {{ submitting() ? 'Envoi en cours...' : 'Confirmer le virement' }}
-        </button>
-        <a routerLink="/payments"
-           class="px-4 py-2.5 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors">
-          Annuler
-        </a>
-      </div>
+        <div class="form-floating mb-3">
+          <input type="text" id="fromAccountId" class="form-control" placeholder="Compte source"
+                 formControlName="fromAccountId"
+                 [class.is-invalid]="form.get('fromAccountId')!.invalid && form.get('fromAccountId')!.touched">
+          <label for="fromAccountId"><i class="bi bi-bank2 me-1"></i>Compte source (ID)</label>
+          @if (form.get('fromAccountId')!.invalid && form.get('fromAccountId')!.touched) {
+            <div class="invalid-feedback">Requis.</div>
+          }
+        </div>
 
-    </form>
+        <div class="form-floating mb-3">
+          <input type="text" id="toAccountId" class="form-control" placeholder="Compte bénéficiaire"
+                 formControlName="toAccountId"
+                 [class.is-invalid]="form.get('toAccountId')!.invalid && form.get('toAccountId')!.touched">
+          <label for="toAccountId"><i class="bi bi-bank me-1"></i>Compte bénéficiaire (ID)</label>
+          @if (form.get('toAccountId')!.invalid && form.get('toAccountId')!.touched) {
+            <div class="invalid-feedback">Requis.</div>
+          }
+        </div>
+
+        <div class="form-floating mb-3">
+          <input type="number" id="amount" class="form-control" placeholder="Montant" min="100"
+                 formControlName="amount"
+                 [class.is-invalid]="form.get('amount')!.invalid && form.get('amount')!.touched">
+          <label for="amount"><i class="bi bi-cash me-1"></i>Montant (XAF, min. 100)</label>
+          @if (form.get('amount')!.invalid && form.get('amount')!.touched) {
+            <div class="invalid-feedback">Montant valide requis (min. 100 XAF).</div>
+          }
+        </div>
+
+        <div class="form-floating mb-4">
+          <input type="text" id="description" class="form-control" placeholder="Motif"
+                 formControlName="description">
+          <label for="description"><i class="bi bi-chat-left-text me-1"></i>Motif du virement</label>
+        </div>
+
+        <div class="d-flex gap-3">
+          <button type="submit" class="btn btn-primary flex-grow-1 py-3 fw-bold" [disabled]="submitting()">
+            @if (submitting()) {
+              <span class="spinner-border spinner-border-sm me-2"></span>Traitement...
+            } @else {
+              <i class="bi bi-send me-2"></i>Effectuer le virement
+            }
+          </button>
+          <a routerLink="/payments" class="btn btn-outline-secondary px-4">Annuler</a>
+        </div>
+
+      </form>
+    </div>
   </div>
 </div>

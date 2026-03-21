@@ -1,26 +1,51 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-900 to-primary-700 p-4">
-  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
-    <div class="text-center mb-6">
-      <span class="text-4xl">🔐</span>
-      <h2 class="text-xl font-semibold mt-3">Vérification en deux étapes</h2>
-      <p class="text-sm text-gray-500 mt-1">Entrez le code reçu par email ou SMS</p>
+<div class="smfp-auth-page d-flex align-items-center justify-content-center min-vh-100 p-3">
+  <div class="w-100" style="max-width:420px">
+
+    <div class="card shadow-lg border-0 rounded-4">
+      <div class="card-body p-4 p-md-5 text-center">
+
+        <div class="smfp-2fa-icon mx-auto mb-3">
+          <i class="bi bi-shield-lock-fill" style="font-size:3.5rem;color:#f59e0b"></i>
+        </div>
+
+        <h2 class="fw-bold mb-2">Vérification en deux étapes</h2>
+        <p class="text-muted small mb-4">
+          Entrez le code à 6 chiffres envoyé sur votre appareil ou application d'authentification.
+        </p>
+
+        @if (error()) {
+          <div class="alert alert-danger d-flex align-items-center gap-2 py-2">
+            <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+          <div class="mb-4">
+            <input type="text" id="twoFactorCode"
+                   class="form-control form-control-lg text-center fw-bold"
+                   style="letter-spacing:0.6em;font-size:1.75rem;font-family:monospace"
+                   placeholder="------" maxlength="6"
+                   formControlName="code"
+                   [class.is-invalid]="form.get('code')!.invalid && form.get('code')!.touched">
+            @if (form.get('code')!.invalid && form.get('code')!.touched) {
+              <div class="invalid-feedback">Le code doit contenir exactement 6 caractères.</div>
+            }
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mb-3">
+            <i class="bi bi-check-circle me-2"></i>Vérifier le code
+          </button>
+
+        </form>
+
+        <button type="button" class="btn btn-link text-muted text-decoration-none small" (click)="back()">
+          <i class="bi bi-arrow-left me-1"></i>Retour à la connexion
+        </button>
+
+      </div>
     </div>
 
-    @if (error()) {
-      <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{{ error() }}</div>
-    }
-
-    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
-      <div>
-        <label class="form-label">Code de vérification</label>
-        <input type="text" formControlName="code" class="form-input text-center text-2xl tracking-widest"
-               placeholder="000000" maxlength="6" autocomplete="one-time-code">
-      </div>
-      <button type="submit" class="btn-primary w-full">Vérifier</button>
-    </form>
-
-    <button (click)="back()" class="mt-4 w-full text-sm text-gray-500 hover:text-gray-700 text-center">
-      ← Retour à la connexion
-    </button>
   </div>
 </div>

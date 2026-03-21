@@ -1,65 +1,84 @@
-<div class="space-y-6">
-  <div class="flex items-center gap-3">
-    <a routerLink="/accounts" class="text-sm text-gray-500 hover:text-gray-700">← Retour</a>
-    <span class="text-gray-300">/</span>
-    <h1 class="text-2xl font-bold text-gray-900">Détail du compte</h1>
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/dashboard" class="text-decoration-none">Accueil</a></li>
+    <li class="breadcrumb-item"><a routerLink="/accounts" class="text-decoration-none">Comptes</a></li>
+    <li class="breadcrumb-item active">Détail du compte</li>
+  </ol>
+</nav>
+
+<!-- Loading -->
+@if (loading()) {
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div>
   </div>
+}
 
-  <!-- Skeleton -->
-  <div *ngIf="loading()" class="space-y-4">
-    <div class="h-32 bg-gray-100 rounded-xl animate-pulse"></div>
-    <div class="h-48 bg-gray-100 rounded-xl animate-pulse"></div>
+<!-- Error -->
+@if (error()) {
+  <div class="alert alert-danger d-flex align-items-center gap-2">
+    <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+    <span>Compte introuvable ou accès refusé.</span>
   </div>
+}
 
-  <!-- Erreur -->
-  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
-    Impossible de charger les informations du compte.
-  </div>
+@if (!loading() && account()) {
+  <div class="row g-4" style="max-width:760px">
 
-  <!-- Contenu -->
-  <div *ngIf="!loading() && account() as acc" class="space-y-6">
-
-    <!-- Carte récapitulative -->
-    <div class="card bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-      <div class="flex items-start justify-between">
-        <div>
-          <p class="text-blue-200 text-sm">Numéro de compte</p>
-          <p class="text-xl font-mono font-bold mt-1">{{ acc.accountNumber }}</p>
-          <p class="text-blue-200 text-sm mt-2">{{ acc.type }} · {{ acc.currency }}</p>
+    <!-- Hero banner -->
+    <div class="col-12">
+      <div class="card border-0 shadow-sm rounded-3 text-white"
+           style="background:linear-gradient(135deg,#0d1b3e,#1e3a8a)">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+            <div>
+              <div class="small text-white-50 mb-1">Numéro de compte</div>
+              <code class="fs-6 text-white">{{ account()!.accountNumber }}</code>
+            </div>
+            @switch (account()!.status) {
+              @case ('ACTIVE')  { <span class="badge bg-success fs-6 px-3">Actif</span> }
+              @case ('BLOCKED') { <span class="badge bg-danger fs-6 px-3">Bloqué</span> }
+              @default { <span class="badge bg-secondary fs-6 px-3">{{ account()!.status }}</span> }
+            }
+          </div>
+          <div class="text-center mt-3">
+            <div class="display-5 fw-bold">{{ account()!.balance | number:'1.0-0' }}</div>
+            <div class="text-white-50">{{ account()!.currency }}</div>
+          </div>
         </div>
-        <span [class]="acc.status | statusBadge">{{ acc.status }}</span>
-      </div>
-      <div class="mt-6">
-        <p class="text-blue-200 text-sm">Solde disponible</p>
-        <p class="text-3xl font-bold mt-1">{{ acc.balance | currencyFormat:acc.currency }}</p>
       </div>
     </div>
 
-    <!-- Grille de détails -->
-    <div class="card">
-      <h2 class="text-base font-semibold text-gray-900 mb-4">Informations du compte</h2>
-      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div *ngFor="let field of detailFields(acc)">
-          <dt class="text-xs text-gray-500 uppercase tracking-wide">{{ field.label }}</dt>
-          <dd class="text-sm font-medium text-gray-900 mt-1">{{ field.value }}</dd>
+    <!-- Details -->
+    <div class="col-12">
+      <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white border-0 py-3">
+          <h6 class="fw-bold mb-0"><i class="bi bi-info-circle me-2 text-primary"></i>Informations du compte</h6>
         </div>
-      </dl>
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush">
+            @for (field of detailFields(account()!); track field.label) {
+              <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
+                <span class="text-muted small">{{ field.label }}</span>
+                <span class="fw-semibold small">{{ field.value }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
     </div>
 
-    <!-- Actions rapides -->
-    <div class="card">
-      <h2 class="text-base font-semibold text-gray-900 mb-4">Actions</h2>
-      <div class="flex flex-wrap gap-3">
-        <a routerLink="/payments/transfer"
-           class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
-          Effectuer un virement
+    <!-- Actions -->
+    <div class="col-12">
+      <div class="d-flex gap-3 flex-wrap">
+        <a routerLink="/payments/transfer" class="btn btn-primary">
+          <i class="bi bi-send me-2"></i>Effectuer un virement
         </a>
-        <a routerLink="/payments"
-           class="px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors">
-          Voir les transactions
+        <a routerLink="/accounts" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left me-2"></i>Retour aux comptes
         </a>
       </div>
     </div>
 
   </div>
-</div>
+}

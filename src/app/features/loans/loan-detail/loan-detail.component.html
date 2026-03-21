@@ -1,95 +1,130 @@
-<div class="space-y-6">
-  <div class="flex items-center gap-3">
-    <a routerLink="/loans" class="text-sm text-gray-500 hover:text-gray-700">← Retour</a>
-    <span class="text-gray-300">/</span>
-    <h1 class="text-2xl font-bold text-gray-900">Détail du prêt</h1>
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/dashboard" class="text-decoration-none">Accueil</a></li>
+    <li class="breadcrumb-item"><a routerLink="/loans" class="text-decoration-none">Prêts</a></li>
+    <li class="breadcrumb-item active">Détail du prêt</li>
+  </ol>
+</nav>
+
+<!-- Loading -->
+@if (loading()) {
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div>
   </div>
+}
 
-  <!-- Skeleton -->
-  <div *ngIf="loading()" class="space-y-4">
-    <div class="h-32 bg-gray-100 rounded-xl animate-pulse"></div>
-    <div class="h-48 bg-gray-100 rounded-xl animate-pulse"></div>
+<!-- Error -->
+@if (error()) {
+  <div class="alert alert-danger d-flex align-items-center gap-2">
+    <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+    <span>Prêt introuvable.</span>
   </div>
+}
 
-  <!-- Erreur -->
-  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
-    Impossible de charger les informations du prêt.
-  </div>
+@if (!loading() && loan()) {
+  <div class="row g-4" style="max-width:760px">
 
-  <!-- Contenu -->
-  <div *ngIf="!loading() && loan() as l" class="space-y-6">
-
-    <!-- Bannière de statut -->
-    <div class="card"
-         [class.border-l-4]="true"
-         [class.border-green-400]="l.status === 'ACTIVE'"
-         [class.border-yellow-400]="l.status === 'PENDING'"
-         [class.border-red-400]="l.status === 'REJECTED' || l.status === 'DEFAULTED'"
-         [class.border-blue-400]="l.status === 'APPROVED' || l.status === 'DISBURSED'"
-         [class.border-gray-300]="l.status === 'CLOSED'">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-sm text-gray-500">{{ l.purpose ?? 'Prêt' }} · Réf: {{ l.id }}</p>
-          <p class="text-2xl font-bold text-gray-900 mt-1">{{ l.loanAmount | currencyFormat }}</p>
+    <!-- Status banner -->
+    <div class="col-12">
+      <div class="card border-0 shadow-sm rounded-3 text-white"
+           [class]="loan()!.status === 'ACTIVE' ? 'smfp-loan-banner-active' :
+                    loan()!.status === 'REJECTED' ? 'smfp-loan-banner-rejected' :
+                    'smfp-loan-banner-default'">
+        <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div>
+            <div class="small text-white-50 mb-1">Référence</div>
+            <code class="text-white">{{ loan()!.reference }}</code>
+            <div class="mt-2 fw-semibold">{{ loan()!.purpose }}</div>
+          </div>
+          @switch (loan()!.status) {
+            @case ('ACTIVE')   { <span class="badge bg-white text-success fs-6 px-3">Actif</span> }
+            @case ('PENDING')  { <span class="badge bg-white text-warning fs-6 px-3">En attente</span> }
+            @case ('APPROVED') { <span class="badge bg-white text-primary fs-6 px-3">Approuvé</span> }
+            @case ('REJECTED') { <span class="badge bg-white text-danger fs-6 px-3">Rejeté</span> }
+            @case ('CLOSED')   { <span class="badge bg-white text-info fs-6 px-3">Soldé</span> }
+            @default { <span class="badge bg-light text-dark fs-6 px-3">{{ loan()!.status }}</span> }
+          }
         </div>
-        <span [class]="l.status | statusBadge">{{ l.status }}</span>
       </div>
     </div>
 
-    <!-- Conditions du prêt -->
-    <div class="card">
-      <h2 class="text-base font-semibold text-gray-900 mb-4">Conditions du prêt</h2>
-      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <dt class="text-xs text-gray-400 uppercase">Montant</dt>
-          <dd class="text-sm font-semibold text-gray-900 mt-1">{{ l.loanAmount | currencyFormat }}</dd>
+    <!-- Conditions -->
+    <div class="col-12">
+      <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white border-0 py-3">
+          <h6 class="fw-bold mb-0"><i class="bi bi-list-check me-2 text-primary"></i>Conditions du prêt</h6>
         </div>
-        <div>
-          <dt class="text-xs text-gray-400 uppercase">Durée</dt>
-          <dd class="text-sm font-semibold text-gray-900 mt-1">{{ l.durationMonths ?? '-' }} mois</dd>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-6 col-md-4">
+              <div class="smfp-loan-stat bg-light rounded-3 p-3">
+                <div class="smfp-loan-stat-val text-primary">{{ loan()!.loanAmount | number:'1.0-0' }}</div>
+                <div class="smfp-loan-stat-lbl">Montant (XAF)</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="smfp-loan-stat bg-light rounded-3 p-3">
+                <div class="smfp-loan-stat-val">{{ loan()!.durationMonths }} mois</div>
+                <div class="smfp-loan-stat-lbl">Durée</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="smfp-loan-stat bg-light rounded-3 p-3">
+                <div class="smfp-loan-stat-val">{{ loan()!.interestRate }}%</div>
+                <div class="smfp-loan-stat-lbl">Taux annuel</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="smfp-loan-stat bg-light rounded-3 p-3">
+                <div class="smfp-loan-stat-val">{{ loan()!.monthlyPayment | number:'1.0-0' }}</div>
+                <div class="smfp-loan-stat-lbl">Mensualité (XAF)</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="smfp-loan-stat bg-light rounded-3 p-3">
+                <div class="smfp-loan-stat-val" style="font-size:.9rem">{{ loan()!.disbursementDate | date:'dd/MM/yyyy' }}</div>
+                <div class="smfp-loan-stat-lbl">Date de déblocage</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="smfp-loan-stat bg-light rounded-3 p-3">
+                <div class="smfp-loan-stat-val" style="font-size:.9rem">{{ loan()!.expectedMaturityDate | date:'dd/MM/yyyy' }}</div>
+                <div class="smfp-loan-stat-lbl">Date d'echeance</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <dt class="text-xs text-gray-400 uppercase">Taux d'intérêt</dt>
-          <dd class="text-sm font-semibold text-gray-900 mt-1">
-            {{ l.interestRate != null ? l.interestRate.toFixed(2) + '% / an' : '-' }}
-          </dd>
-        </div>
-        <div>
-          <dt class="text-xs text-gray-400 uppercase">Mensualité</dt>
-          <dd class="text-sm font-semibold text-gray-900 mt-1">
-            {{ l.monthlyPayment != null ? (l.monthlyPayment | currencyFormat) : '-' }}
-          </dd>
-        </div>
-        <div>
-          <dt class="text-xs text-gray-400 uppercase">Date de demande</dt>
-          <dd class="text-sm font-semibold text-gray-900 mt-1">
-            {{ l.applicationDate ? (l.applicationDate | date:'dd/MM/yyyy') : '-' }}
-          </dd>
-        </div>
-        <div>
-          <dt class="text-xs text-gray-400 uppercase">Échéance prévue</dt>
-          <dd class="text-sm font-semibold text-gray-900 mt-1">
-            {{ l.expectedMaturityDate ? (l.expectedMaturityDate | date:'dd/MM/yyyy') : '-' }}
-          </dd>
-        </div>
-      </dl>
+      </div>
     </div>
 
-    <!-- Avancement du remboursement -->
-    <div *ngIf="l.status === 'ACTIVE' && l.paidAmount != null" class="card">
-      <h2 class="text-base font-semibold text-gray-900 mb-4">Avancement du remboursement</h2>
-      <div class="flex justify-between text-sm text-gray-600 mb-2">
-        <span>{{ l.paidAmount | currencyFormat }} remboursés</span>
-        <span>{{ (l.loanAmount - l.paidAmount) | currencyFormat }} restants</span>
+    <!-- Progress for active -->
+    @if (loan()!.status === 'ACTIVE') {
+      <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-3">
+          <div class="card-body p-4">
+            <h6 class="fw-bold mb-3"><i class="bi bi-graph-up-arrow me-2 text-success"></i>Suivi du remboursement</h6>
+            <div class="d-flex justify-content-between small text-muted mb-2">
+              <span>Payé : {{ loan()!.paidAmount | number:'1.0-0' }} XAF</span>
+              <span>{{ ((loan()!.paidAmount ?? 0) / loan()!.loanAmount * 100) | number:'1.0-0' }}%</span>
+            </div>
+            <div class="progress mb-2" style="height:10px">
+              <div class="progress-bar bg-success rounded-pill"
+                   [style.width.%]="(loan()!.paidAmount ?? 0) / loan()!.loanAmount * 100"></div>
+            </div>
+            <div class="small text-muted text-end">
+              Restant : {{ loan()!.loanAmount - (loan()!.paidAmount ?? 0) | number:'1.0-0' }} XAF
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="h-3 bg-gray-200 rounded-full">
-        <div class="h-3 bg-green-500 rounded-full transition-all"
-             [style.width.%]="(l.paidAmount / l.loanAmount) * 100"></div>
-      </div>
-      <p class="text-xs text-gray-400 mt-2">
-        {{ ((l.paidAmount / l.loanAmount) * 100).toFixed(1) }}% remboursé
-      </p>
+    }
+
+    <div class="col-12">
+      <a routerLink="/loans" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Retour à mes prêts
+      </a>
     </div>
 
   </div>
-</div>
+}

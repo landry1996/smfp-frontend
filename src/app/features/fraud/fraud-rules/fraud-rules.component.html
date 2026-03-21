@@ -1,58 +1,90 @@
-<div class="space-y-6">
-  <div class="flex items-center gap-3">
-    <a routerLink="/fraud" class="text-sm text-gray-500 hover:text-gray-700">← Fraude</a>
-    <span class="text-gray-300">/</span>
-    <h1 class="text-2xl font-bold text-gray-900">Règles de détection</h1>
-  </div>
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/dashboard" class="text-decoration-none">Accueil</a></li>
+    <li class="breadcrumb-item"><a routerLink="/fraud" class="text-decoration-none">Fraude</a></li>
+    <li class="breadcrumb-item active">Regles</li>
+  </ol>
+</nav>
 
-  <!-- Skeleton -->
-  <div *ngIf="loading()" class="space-y-2">
-    <div *ngFor="let i of [1,2,3]" class="h-16 bg-gray-100 rounded-lg animate-pulse"></div>
-  </div>
-
-  <!-- Erreur -->
-  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
-    Erreur lors du chargement des règles.
-  </div>
-
-  <!-- État vide -->
-  <div *ngIf="!loading() && data().length === 0 && !error()"
-       class="card text-center py-12 text-gray-400">
-    <span class="text-5xl block mb-3">⚙️</span>
-    <p class="font-medium">Aucune règle configurée</p>
-  </div>
-
-  <!-- Tableau des règles -->
-  <div *ngIf="!loading() && data().length > 0" class="card overflow-x-auto p-0">
-    <table class="w-full text-sm">
-      <thead class="bg-gray-50 border-b border-gray-200">
-        <tr>
-          <th class="px-4 py-3 text-left font-semibold text-gray-600">Code</th>
-          <th class="px-4 py-3 text-left font-semibold text-gray-600">Nom</th>
-          <th class="px-4 py-3 text-left font-semibold text-gray-600">Description</th>
-          <th class="px-4 py-3 text-center font-semibold text-gray-600">Priorité</th>
-          <th class="px-4 py-3 text-center font-semibold text-gray-600">Statut</th>
-          <th class="px-4 py-3 text-center font-semibold text-gray-600">Actions</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100">
-        <tr *ngFor="let rule of data()" class="hover:bg-gray-50 transition-colors">
-          <td class="px-4 py-3 font-mono text-xs text-gray-600">{{ rule.code }}</td>
-          <td class="px-4 py-3 font-medium text-gray-900">{{ rule.name }}</td>
-          <td class="px-4 py-3 text-gray-600 max-w-xs truncate">{{ rule.description ?? '-' }}</td>
-          <td class="px-4 py-3 text-center font-semibold text-gray-700">{{ rule.priority ?? '-' }}</td>
-          <td class="px-4 py-3 text-center">
-            <span [class]="(rule.enabled ? 'ACTIVE' : 'INACTIVE') | statusBadge">
-              {{ rule.enabled ? 'Activée' : 'Désactivée' }}
-            </span>
-          </td>
-          <td class="px-4 py-3 text-center">
-            <button (click)="toggleRule(rule)" class="text-xs text-blue-600 hover:underline">
-              {{ rule.enabled ? 'Désactiver' : 'Activer' }}
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+  <h4 class="fw-bold mb-0"><i class="bi bi-sliders me-2 text-primary"></i>Regles de detection</h4>
 </div>
+
+<!-- Loading -->
+@if (loading()) {
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div>
+  </div>
+}
+
+<!-- Error -->
+@if (error()) {
+  <div class="alert alert-danger d-flex align-items-center gap-2">
+    <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+    <span>Impossible de charger les regles.</span>
+  </div>
+}
+
+<!-- Empty -->
+@if (!loading() && !error() && data().length === 0) {
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-sliders fs-1 d-block mb-3 opacity-25"></i>
+    <p class="mb-0 fw-semibold">Aucune regle configuree</p>
+  </div>
+}
+
+<!-- Table -->
+@if (!loading() && data().length > 0) {
+  <div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-4">Code</th>
+              <th>Nom</th>
+              <th>Description</th>
+              <th>Priorite</th>
+              <th>Declenchements</th>
+              <th>Statut</th>
+              <th class="pe-4">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (rule of data(); track rule.id) {
+              <tr>
+                <td class="ps-4"><code class="small">{{ rule.code }}</code></td>
+                <td class="fw-semibold">{{ rule.name }}</td>
+                <td class="text-muted small" style="max-width:200px;white-space:normal">{{ rule.description ?? '—' }}</td>
+                <td>
+                  <span class="badge bg-light text-dark border">{{ rule.priority ?? '—' }}</span>
+                </td>
+                <td class="text-center">{{ rule.triggerCount ?? 0 }}</td>
+                <td>
+                  @if (rule.enabled) {
+                    <span class="badge bg-success">Active</span>
+                  } @else {
+                    <span class="badge bg-secondary">Inactive</span>
+                  }
+                </td>
+                <td class="pe-4">
+                  <button class="btn btn-sm"
+                          [class]="rule.enabled ? 'btn-outline-danger' : 'btn-outline-success'"
+                          (click)="toggleRule(rule)">
+                    @if (rule.enabled) {
+                      <i class="bi bi-pause-circle me-1"></i>Desactiver
+                    } @else {
+                      <i class="bi bi-play-circle me-1"></i>Activer
+                    }
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+}

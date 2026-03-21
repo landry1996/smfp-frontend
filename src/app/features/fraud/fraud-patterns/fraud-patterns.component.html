@@ -1,61 +1,94 @@
-<div class="space-y-6">
-  <div class="flex items-center gap-3">
-    <a routerLink="/fraud" class="text-sm text-gray-500 hover:text-gray-700">← Fraude</a>
-    <span class="text-gray-300">/</span>
-    <h1 class="text-2xl font-bold text-gray-900">Patterns de fraude</h1>
-  </div>
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/dashboard" class="text-decoration-none">Accueil</a></li>
+    <li class="breadcrumb-item"><a routerLink="/fraud" class="text-decoration-none">Fraude</a></li>
+    <li class="breadcrumb-item active">Patterns</li>
+  </ol>
+</nav>
 
-  <!-- Skeleton -->
-  <div *ngIf="loading()" class="space-y-3">
-    <div *ngFor="let i of [1,2,3]" class="h-20 bg-gray-100 rounded-xl animate-pulse"></div>
-  </div>
-
-  <!-- Erreur -->
-  <div *ngIf="error()" class="card border-l-4 border-red-400 text-red-700 text-sm">
-    Erreur lors du chargement des patterns.
-  </div>
-
-  <!-- État vide -->
-  <div *ngIf="!loading() && data().length === 0 && !error()"
-       class="card text-center py-12 text-gray-400">
-    <span class="text-5xl block mb-3">🔍</span>
-    <p class="font-medium">Aucun pattern détecté</p>
-  </div>
-
-  <!-- Liste des patterns -->
-  <div *ngIf="!loading() && data().length > 0" class="space-y-4">
-    <div *ngFor="let pattern of data()" class="card">
-      <div class="flex items-start justify-between">
-        <div>
-          <p class="font-semibold text-gray-900">{{ pattern.name ?? pattern.patternType }}</p>
-          <p class="text-sm text-gray-500 mt-0.5">{{ pattern.description ?? '-' }}</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <span [class]="confidenceClass(pattern.confidence)">
-            {{ pattern.confidence != null ? (pattern.confidence * 100).toFixed(0) + '%' : '-' }}
-          </span>
-          <span [class]="(pattern.active ? 'ACTIVE' : 'INACTIVE') | statusBadge">
-            {{ pattern.active ? 'Actif' : 'Inactif' }}
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="pattern.occurrences != null" class="mt-3 grid grid-cols-3 gap-3">
-        <div>
-          <p class="text-xs text-gray-400 uppercase">Occurrences</p>
-          <p class="text-sm font-semibold text-gray-900 mt-0.5">{{ pattern.occurrences }}</p>
-        </div>
-        <div>
-          <p class="text-xs text-gray-400 uppercase">Dernière détection</p>
-          <p class="text-sm font-semibold text-gray-900 mt-0.5">
-            {{ pattern.lastDetected ? (pattern.lastDetected | date:'dd/MM/yyyy') : '-' }}
-          </p>
-        </div>
-        <div>
-          <p class="text-xs text-gray-400 uppercase">Score de risque</p>
-          <p class="text-sm font-semibold text-gray-900 mt-0.5">{{ pattern.riskScore ?? '-' }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+  <h4 class="fw-bold mb-0"><i class="bi bi-diagram-3 me-2 text-warning"></i>Patterns de fraude</h4>
 </div>
+
+<!-- Loading -->
+@if (loading()) {
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-warning" role="status"><span class="visually-hidden">Chargement...</span></div>
+  </div>
+}
+
+<!-- Error -->
+@if (error()) {
+  <div class="alert alert-danger d-flex align-items-center gap-2">
+    <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+    <span>Impossible de charger les patterns.</span>
+  </div>
+}
+
+<!-- Empty -->
+@if (!loading() && !error() && data().length === 0) {
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-diagram-3 fs-1 d-block mb-3 opacity-25"></i>
+    <p class="mb-0 fw-semibold">Aucun pattern detecte</p>
+  </div>
+}
+
+<!-- Cards -->
+@if (!loading() && data().length > 0) {
+  <div class="row g-3">
+    @for (pattern of data(); track pattern.id) {
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <h6 class="fw-bold mb-1">{{ pattern.name ?? pattern.patternType }}</h6>
+                <span class="badge bg-light text-dark border small">{{ pattern.patternType }}</span>
+              </div>
+              @if (pattern.active) {
+                <span class="badge bg-success">Actif</span>
+              } @else {
+                <span class="badge bg-secondary">Inactif</span>
+              }
+            </div>
+
+            @if (pattern.description) {
+              <p class="small text-muted mb-3">{{ pattern.description }}</p>
+            }
+
+            <!-- Confidence bar -->
+            @if (pattern.confidence != null) {
+              <div class="mb-3">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span class="text-muted">Confiance</span>
+                  <span class="fw-semibold"
+                        [class.text-danger]="pattern.confidence >= 0.8"
+                        [class.text-warning]="pattern.confidence >= 0.5 && pattern.confidence < 0.8"
+                        [class.text-success]="pattern.confidence < 0.5">
+                    {{ (pattern.confidence * 100) | number:'1.0-0' }}%
+                  </span>
+                </div>
+                <div class="progress" style="height:6px">
+                  <div class="progress-bar"
+                       [class.bg-danger]="pattern.confidence >= 0.8"
+                       [class.bg-warning]="pattern.confidence >= 0.5 && pattern.confidence < 0.8"
+                       [class.bg-success]="pattern.confidence < 0.5"
+                       [style.width.%]="pattern.confidence * 100"></div>
+                </div>
+              </div>
+            }
+
+            <div class="d-flex gap-3 small text-muted">
+              <span><i class="bi bi-repeat me-1"></i>{{ pattern.occurrences ?? 0 }} occurrence(s)</span>
+              @if (pattern.lastDetected) {
+                <span><i class="bi bi-clock me-1"></i>{{ pattern.lastDetected | date:'dd/MM/yy' }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}

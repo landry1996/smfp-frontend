@@ -1,54 +1,107 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-900 to-primary-700 p-4">
-  <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-8">
-    <h2 class="text-xl font-semibold mb-6">Créer un compte</h2>
+<div class="smfp-auth-page d-flex align-items-center justify-content-center min-vh-100 p-3">
+  <div class="w-100" style="max-width:540px">
 
-    @if (error()) {
-      <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{{ error() }}</div>
-    }
-    @if (success()) {
-      <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
-        Compte créé ! <a routerLink="/auth/login" class="underline font-medium">Se connecter</a>
-      </div>
-    }
+    <div class="text-center mb-4">
+      <div class="smfp-auth-logo mx-auto mb-3"><i class="bi bi-bank2 fs-2"></i></div>
+      <h1 class="fw-bold text-white fs-3 mb-1">SMFP</h1>
+      <p class="text-white-50 small mb-0">Créez votre compte en quelques minutes</p>
+    </div>
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="grid grid-cols-2 gap-4">
-      <div>
-        <label class="form-label">Prénom</label>
-        <input type="text" formControlName="firstName" class="form-input" placeholder="Jean">
-        <p *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched"
-           class="text-xs text-red-500 mt-1">Champ obligatoire</p>
-      </div>
-      <div>
-        <label class="form-label">Nom</label>
-        <input type="text" formControlName="lastName" class="form-input" placeholder="Dupont">
-        <p *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched"
-           class="text-xs text-red-500 mt-1">Champ obligatoire</p>
-      </div>
-      <div class="col-span-2">
-        <label class="form-label">Email</label>
-        <input type="email" formControlName="email" class="form-input" placeholder="vous@exemple.com">
-        <p *ngIf="form.get('email')?.invalid && form.get('email')?.touched"
-           class="text-xs text-red-500 mt-1">Email invalide</p>
-      </div>
-      <div class="col-span-2">
-        <label class="form-label">Téléphone</label>
-        <input type="tel" formControlName="phoneNumber" class="form-input" placeholder="+237 6XX XXX XXX">
-      </div>
-      <div class="col-span-2">
-        <label class="form-label">Mot de passe</label>
-        <input type="password" formControlName="password" class="form-input" placeholder="••••••••">
-        <p *ngIf="form.get('password')?.hasError('minlength') && form.get('password')?.touched"
-           class="text-xs text-red-500 mt-1">Minimum 8 caractères</p>
-      </div>
-      <div class="col-span-2">
-        <button type="submit" [disabled]="loading()" class="btn-primary w-full">
-          {{ loading() ? 'Création...' : 'Créer mon compte' }}
-        </button>
-      </div>
-    </form>
+    <div class="card shadow-lg border-0 rounded-4">
+      <div class="card-body p-4 p-md-5">
 
-    <p class="text-center text-sm text-gray-500 mt-4">
-      Déjà inscrit ? <a routerLink="/auth/login" class="text-primary-600 hover:underline">Se connecter</a>
-    </p>
+        <h2 class="fw-bold mb-1 text-center" style="font-size:1.35rem">Créer un compte</h2>
+        <p class="text-muted text-center small mb-4">Rejoignez la plateforme SMFP</p>
+
+        @if (success()) {
+          <div class="alert alert-success d-flex align-items-center gap-2">
+            <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+            <span>Compte créé avec succès ! Redirection vers la connexion...</span>
+          </div>
+        }
+
+        @if (error()) {
+          <div class="alert alert-danger d-flex align-items-center gap-2 py-2">
+            <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <div class="form-floating">
+                <input type="text" id="regFirstName" class="form-control" placeholder="Prénom"
+                       formControlName="firstName"
+                       [class.is-invalid]="form.get('firstName')!.invalid && form.get('firstName')!.touched">
+                <label for="regFirstName">Prénom</label>
+                @if (form.get('firstName')!.invalid && form.get('firstName')!.touched) {
+                  <div class="invalid-feedback">Requis.</div>
+                }
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-floating">
+                <input type="text" id="regLastName" class="form-control" placeholder="Nom"
+                       formControlName="lastName"
+                       [class.is-invalid]="form.get('lastName')!.invalid && form.get('lastName')!.touched">
+                <label for="regLastName">Nom</label>
+                @if (form.get('lastName')!.invalid && form.get('lastName')!.touched) {
+                  <div class="invalid-feedback">Requis.</div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="email" id="regEmail" class="form-control" placeholder="email"
+                   formControlName="email"
+                   [class.is-invalid]="form.get('email')!.invalid && form.get('email')!.touched">
+            <label for="regEmail"><i class="bi bi-envelope me-1"></i>Adresse e-mail</label>
+            @if (form.get('email')!.invalid && form.get('email')!.touched) {
+              <div class="invalid-feedback">E-mail invalide.</div>
+            }
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="tel" id="regPhone" class="form-control" placeholder="Téléphone"
+                   formControlName="phoneNumber"
+                   [class.is-invalid]="form.get('phoneNumber')!.invalid && form.get('phoneNumber')!.touched">
+            <label for="regPhone"><i class="bi bi-phone me-1"></i>Numéro de téléphone</label>
+            @if (form.get('phoneNumber')!.invalid && form.get('phoneNumber')!.touched) {
+              <div class="invalid-feedback">Requis.</div>
+            }
+          </div>
+
+          <div class="form-floating mb-4">
+            <input type="password" id="regPassword" class="form-control" placeholder="Mot de passe"
+                   formControlName="password"
+                   [class.is-invalid]="form.get('password')!.invalid && form.get('password')!.touched">
+            <label for="regPassword"><i class="bi bi-lock me-1"></i>Mot de passe (min. 8 caractères)</label>
+            @if (form.get('password')!.invalid && form.get('password')!.touched) {
+              <div class="invalid-feedback">Min. 8 caractères requis.</div>
+            }
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mb-3" [disabled]="loading()">
+            @if (loading()) {
+              <span class="spinner-border spinner-border-sm me-2"></span>Création en cours...
+            } @else {
+              <i class="bi bi-person-plus me-2"></i>Créer mon compte
+            }
+          </button>
+
+        </form>
+
+        <div class="text-center">
+          <small class="text-muted">Déjà inscrit ?
+            <a routerLink="/auth/login" class="fw-semibold text-decoration-none">Se connecter</a>
+          </small>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>
