@@ -2,13 +2,12 @@ import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { WorkflowService, WorkflowTask } from '../workflow.service';
-import { StatusBadgePipe } from '../../../shared/pipes/status-badge.pipe';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-tasks',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusBadgePipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './tasks.component.html',
 })
 export class TasksComponent implements OnInit {

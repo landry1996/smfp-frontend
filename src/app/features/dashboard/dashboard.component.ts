@@ -8,12 +8,10 @@ import { FraudService } from '../fraud/fraud.service';
 import { Account } from '../../core/models/account.models';
 import { Notification } from '../../core/models/notification.models';
 import { FraudDashboardOverview } from '../../core/models/fraud.models';
-import { CurrencyFormatPipe } from '../../shared/pipes/currency-format.pipe';
-
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, CurrencyFormatPipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {

@@ -2,12 +2,10 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ReportService, Analytics } from '../report.service';
-import { CurrencyFormatPipe } from '../../../shared/pipes/currency-format.pipe';
-
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, RouterLink, CurrencyFormatPipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './analytics.component.html',
 })
 export class AnalyticsComponent implements OnInit {

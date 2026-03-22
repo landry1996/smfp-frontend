@@ -2,8 +2,6 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { CurrencyFormatPipe } from '../../../shared/pipes/currency-format.pipe';
-
 interface ScheduleEntry {
   month:     number;
   payment:   number;
@@ -22,7 +20,7 @@ interface SimulationResult {
 @Component({
   selector: 'app-loan-simulator',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, CurrencyFormatPipe],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './loan-simulator.component.html',
 })
 export class LoanSimulatorComponent {

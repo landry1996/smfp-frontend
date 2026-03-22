@@ -1,12 +1,10 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GeolocationService, AgentLocationResponse } from './geolocation.service';
-import { StatusBadgePipe } from '../../shared/pipes/status-badge.pipe';
-
 @Component({
   selector: 'app-geolocation',
   standalone: true,
-  imports: [CommonModule, StatusBadgePipe],
+  imports: [CommonModule],
   templateUrl: './geolocation.component.html',
 })
 export class GeolocationComponent implements OnInit {

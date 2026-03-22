@@ -78,7 +78,7 @@
         <!-- Left: text -->
         <div class="col-lg-7">
           <span class="smfp-badge-pill animate-fade-in-down">
-            <i class="bi bi-stars me-1"></i>Plateforme bancaire nouvelle génération
+            <i class="bi bi-stars me-1"></i>Infrastructure financière pour la microfinance moderne
           </span>
 
           <h1 class="smfp-hero-title mt-3 animate-fade-in-up">
@@ -87,19 +87,24 @@
           </h1>
 
           <p class="smfp-hero-sub animate-fade-in-up delay-1">
-            SMFP est une plateforme complète de management financier destinée aux institutions
-            bancaires, agents de terrain et clients — <strong>sécurisée</strong>,
-            <strong>traçable</strong> et en <strong>temps réel</strong>.
+            SMFP est une plateforme financière intelligente conçue pour les institutions de microfinance,
+            les agents de terrain et leurs clients. Elle permet de gérer les comptes,
+            exécuter des <strong>transactions sécurisées</strong> et détecter les activités suspectes
+            en <strong>temps réel</strong>.
+          </p>
+
+          <p class="smfp-hero-tagline animate-fade-in-up delay-1">
+            Transactions rapides, sécurité de niveau bancaire et visibilité complète sur l'activité financière.
           </p>
 
           <div class="d-flex flex-wrap gap-3 animate-fade-in-up delay-2">
             <a routerLink="/auth/login"
                class="btn smfp-btn-hero-primary btn-lg px-5">
-              <i class="bi bi-box-arrow-in-right me-2"></i>Accéder à la plateforme
+              <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
             </a>
             <a routerLink="/auth/register"
                class="btn smfp-btn-hero-outline btn-lg px-5">
-              <i class="bi bi-person-plus me-2"></i>Ouvrir un compte
+              <i class="bi bi-person-plus me-2"></i>Créer un compte
             </a>
           </div>
 
@@ -203,9 +208,9 @@
 
       <div class="text-center mb-5">
         <span class="smfp-section-badge">Fonctionnalités</span>
-        <h2 class="smfp-section-title mt-2">Tout ce dont vous avez besoin</h2>
+        <h2 class="smfp-section-title mt-2">Une plateforme conçue pour les opérations financières modernes</h2>
         <p class="smfp-section-sub mx-auto">
-          Un écosystème financier intégré couvrant l'ensemble des opérations bancaires modernes.
+          SMFP fournit tous les outils nécessaires pour gérer efficacement une institution financière.
         </p>
       </div>
 
@@ -233,6 +238,59 @@
   </section>
 
   <!-- ══════════════════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════════════════ -->
+  <section class="smfp-how-section py-6">
+    <div class="container">
+
+      <div class="text-center mb-5">
+        <span class="smfp-section-badge">Comment ça fonctionne</span>
+        <h2 class="smfp-section-title mt-2">Une plateforme simple, puissante et sécurisée</h2>
+      </div>
+
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-4">
+          <div class="smfp-step-card text-center">
+            <div class="smfp-step-number">1</div>
+            <div class="smfp-step-icon mt-3">
+              <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <h4 class="smfp-step-title mt-3">Création et gestion des comptes</h4>
+            <p class="smfp-step-desc">
+              Inscrivez les clients, créez des comptes et gérez les profils utilisateurs en quelques clics.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="smfp-step-card text-center">
+            <div class="smfp-step-number">2</div>
+            <div class="smfp-step-icon mt-3">
+              <i class="bi bi-arrow-left-right"></i>
+            </div>
+            <h4 class="smfp-step-title mt-3">Exécution des transactions</h4>
+            <p class="smfp-step-desc">
+              Effectuez des transferts, dépôts et retraits avec un suivi en temps réel à chaque étape.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="smfp-step-card text-center">
+            <div class="smfp-step-number">3</div>
+            <div class="smfp-step-icon mt-3">
+              <i class="bi bi-shield-fill-check"></i>
+            </div>
+            <h4 class="smfp-step-title mt-3">Surveillance et prévention de fraude</h4>
+            <p class="smfp-step-desc">
+              Analyse automatique des transactions et alertes de sécurité pour protéger chaque opération.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
        SECURITY SECTION
   ══════════════════════════════════════════ -->
   <section id="security" class="smfp-security-section py-6">
@@ -250,9 +308,9 @@
 
         <div class="col-lg-7">
           <span class="smfp-section-badge">Sécurité</span>
-          <h2 class="smfp-section-title mt-2">Votre sécurité est notre priorité</h2>
+          <h2 class="smfp-section-title mt-2">Sécurité de niveau bancaire</h2>
           <p class="text-muted mb-4">
-            Architecture multi-couches conçue pour les environnements bancaires les plus exigeants.
+            SMFP intègre des mécanismes avancés pour garantir la protection des données et des transactions.
           </p>
           <div class="row g-3">
             @for (s of securityItems; track s.title) {
@@ -276,21 +334,73 @@
   </section>
 
   <!-- ══════════════════════════════════════════
+       ADOPTION SECTION
+  ══════════════════════════════════════════ -->
+  <section class="smfp-adoption-section py-6">
+    <div class="container">
+      <div class="row align-items-center g-5">
+
+        <div class="col-lg-6">
+          <span class="smfp-section-badge">Pour qui ?</span>
+          <h2 class="smfp-section-title mt-2">Une solution conçue pour les institutions financières modernes</h2>
+          <p class="text-muted">
+            SMFP aide les institutions de microfinance et les organisations financières à atteindre leurs objectifs.
+          </p>
+        </div>
+
+        <div class="col-lg-6">
+          <ul class="smfp-adoption-list">
+            <li class="smfp-adoption-item">
+              <i class="bi bi-check-circle-fill text-primary"></i>
+              <div>
+                <strong>Digitaliser leurs opérations</strong>
+                <p class="text-muted small mb-0">Remplacez les processus manuels par des flux automatisés et traçables.</p>
+              </div>
+            </li>
+            <li class="smfp-adoption-item">
+              <i class="bi bi-check-circle-fill text-primary"></i>
+              <div>
+                <strong>Améliorer la transparence des transactions</strong>
+                <p class="text-muted small mb-0">Audit trail complet et rapports en temps réel pour chaque opération.</p>
+              </div>
+            </li>
+            <li class="smfp-adoption-item">
+              <i class="bi bi-check-circle-fill text-primary"></i>
+              <div>
+                <strong>Réduire les risques de fraude</strong>
+                <p class="text-muted small mb-0">Détection intelligente basée sur l'IA pour protéger vos actifs et vos clients.</p>
+              </div>
+            </li>
+            <li class="smfp-adoption-item">
+              <i class="bi bi-check-circle-fill text-primary"></i>
+              <div>
+                <strong>Offrir de meilleurs services à leurs clients</strong>
+                <p class="text-muted small mb-0">Expérience fluide, paiements mobiles intégrés et suivi personnalisé.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
        CTA BANNER
   ══════════════════════════════════════════ -->
   <section class="smfp-cta-banner py-6">
     <div class="container text-center">
-      <h2 class="smfp-cta-title">Prêt à commencer ?</h2>
+      <h2 class="smfp-cta-title">Modernisez votre infrastructure financière</h2>
       <p class="smfp-cta-sub mx-auto mb-4">
-        Connectez-vous à votre espace ou créez un nouveau compte en quelques minutes.
-        Aucune installation requise.
+        Rejoignez une nouvelle génération de plateformes financières conçues pour la sécurité,
+        la performance et l'évolutivité.
       </p>
       <div class="d-flex flex-wrap justify-content-center gap-3">
-        <a routerLink="/auth/login" class="btn smfp-btn-gold btn-lg px-5">
-          <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
-        </a>
-        <a routerLink="/auth/register" class="btn btn-outline-light btn-lg px-5">
+        <a routerLink="/auth/register" class="btn smfp-btn-gold btn-lg px-5">
           <i class="bi bi-person-plus me-2"></i>Créer un compte
+        </a>
+        <a routerLink="/auth/login" class="btn btn-outline-light btn-lg px-5">
+          <i class="bi bi-play-circle me-2"></i>Demander une démo
         </a>
       </div>
     </div>
@@ -325,6 +435,8 @@
             <li><a routerLink="/auth/login">Connexion</a></li>
             <li><a routerLink="/auth/register">Inscription</a></li>
             <li><a href="#features">Fonctionnalités</a></li>
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">API</a></li>
           </ul>
         </div>
 
@@ -334,6 +446,7 @@
             <li><a href="#security">Chiffrement</a></li>
             <li><a href="#security">Authentification 2FA</a></li>
             <li><a href="#security">Conformité</a></li>
+            <li><a href="#">Support</a></li>
           </ul>
         </div>
 

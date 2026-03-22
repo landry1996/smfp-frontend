@@ -3,13 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { PaymentService, Payment } from '../payment.service';
-import { CurrencyFormatPipe } from '../../../shared/pipes/currency-format.pipe';
-import { StatusBadgePipe } from '../../../shared/pipes/status-badge.pipe';
-
 @Component({
   selector: 'app-payments-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, CurrencyFormatPipe, StatusBadgePipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './payments-list.component.html',
 })
 export class PaymentsListComponent implements OnInit {

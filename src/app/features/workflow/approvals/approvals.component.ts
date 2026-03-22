@@ -2,13 +2,12 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { WorkflowService, Approval, ApprovalDecisionRequest } from '../workflow.service';
-import { StatusBadgePipe } from '../../../shared/pipes/status-badge.pipe';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-approvals',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusBadgePipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './approvals.component.html',
 })
 export class ApprovalsComponent implements OnInit {

@@ -3,12 +3,10 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AdminService, AdminUser } from '../admin.service';
-import { StatusBadgePipe } from '../../../shared/pipes/status-badge.pipe';
-
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, StatusBadgePipe],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './admin-users.component.html',
 })
 export class AdminUsersComponent implements OnInit {

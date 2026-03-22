@@ -52,44 +52,44 @@ export class HomeComponent implements OnInit {
   // ── Features ────────────────────────────────────────────────────────────
   readonly features = [
     {
-      icon: 'bi-bank2',
-      title: 'Gestion des comptes',
-      description: 'Comptes courants, epargne et depots a terme avec suivi en temps reel des soldes, regles d\'epargne automatique et historique complet.',
+      icon: 'bi-lightning-charge-fill',
+      title: 'Transactions en temps réel',
+      description: 'Exécutez et suivez les opérations financières instantanément avec une visibilité complète sur chaque mouvement de fonds.',
       color: 'blue',
-      tags: ['Solde temps reel', 'Epargne auto', 'Historique'],
-    },
-    {
-      icon: 'bi-send-fill',
-      title: 'Paiements & Transferts',
-      description: 'Virements instantanes SEPA/SWIFT, mobile money MTN & Orange Money, paiements de factures et recharges telephoniques.',
-      color: 'purple',
-      tags: ['MTN MoMo', 'Orange Money', 'Virements'],
-    },
-    {
-      icon: 'bi-file-earmark-text-fill',
-      title: 'Credits & Prets',
-      description: 'Demande de pret en ligne, scoring de credit automatise par IA, suivi des remboursements et gestion des garanties.',
-      color: 'green',
-      tags: ['Scoring IA', 'Remboursement', 'Garanties'],
+      tags: ['Instantané', 'Traçabilité', 'Temps réel'],
     },
     {
       icon: 'bi-graph-up-arrow',
-      title: 'Detection de fraude',
-      description: 'Surveillance temps reel des transactions avec modeles ML, alertes intelligentes, regles configurables et analyse comportementale.',
+      title: 'Détection intelligente de fraude',
+      description: 'Analyse avancée des transactions pour identifier les activités suspectes et protéger les utilisateurs grâce aux modèles ML.',
       color: 'red',
-      tags: ['Machine Learning', 'Alertes', 'Regles'],
+      tags: ['Machine Learning', 'Alertes', 'Règles'],
     },
     {
-      icon: 'bi-geo-alt-fill',
-      title: 'Geolocalisation agents',
-      description: 'Suivi en temps reel des agents de terrain, zones de risque geospatiales, recherche de proximite et analyse de densite.',
+      icon: 'bi-phone-fill',
+      title: 'Intégration Mobile Money',
+      description: 'Connectez vos services aux principaux systèmes de paiement mobile — MTN Mobile Money, Orange Money et plus encore.',
+      color: 'purple',
+      tags: ['MTN MoMo', 'Orange Money', 'Paiements'],
+    },
+    {
+      icon: 'bi-people-fill',
+      title: 'Gestion multi-agents',
+      description: 'Supervisez les agents de terrain, les comptes clients et les opérations depuis un tableau de bord centralisé et intuitif.',
+      color: 'green',
+      tags: ['Supervision', 'Tableau de bord', 'Terrain'],
+    },
+    {
+      icon: 'bi-file-earmark-text-fill',
+      title: 'Crédits & Prêts',
+      description: 'Demande de prêt en ligne, scoring de crédit automatisé par IA, suivi des remboursements et gestion des garanties.',
       color: 'orange',
-      tags: ['Temps reel', 'Zones risque', 'PostGIS'],
+      tags: ['Scoring IA', 'Remboursement', 'Garanties'],
     },
     {
       icon: 'bi-bar-chart-fill',
       title: 'Rapports & Audit',
-      description: 'Tableaux de bord analytiques interactifs, journaux d\'audit immutables, exports reglementaires et archivage automatise.',
+      description: 'Tableaux de bord analytiques interactifs, journaux d\'audit immuables, exports réglementaires et archivage automatisé.',
       color: 'teal',
       tags: ['Tableaux de bord', 'Audit trail', 'Exports'],
     },
@@ -97,12 +97,12 @@ export class HomeComponent implements OnInit {
 
   // ── Security section ─────────────────────────────────────────────────────
   readonly securityItems = [
-    { icon: 'bi-lock-fill',               title: 'Chiffrement AES-256',   desc: 'Donnees chiffrees au repos et en transit' },
-    { icon: 'bi-person-check-fill',       title: 'Authentification 2FA',  desc: 'TOTP / SMS pour chaque connexion' },
-    { icon: 'bi-eye-slash-fill',          title: 'Controle acces RBAC',   desc: 'Permissions granulaires par role' },
-    { icon: 'bi-journal-check',           title: 'Audit trail complet',   desc: 'Journal immutable de toutes les actions' },
-    { icon: 'bi-bug-fill',                title: 'Detection fraude IA',   desc: 'Modeles ML mis a jour en continu' },
-    { icon: 'bi-shield-fill-exclamation', title: 'Conformite COBAC',      desc: 'Respect des reglementations bancaires' },
+    { icon: 'bi-lock-fill',               title: 'Chiffrement AES-256',         desc: 'Données chiffrées au repos et en transit avec clés rotatives' },
+    { icon: 'bi-shield-fill-check',       title: 'Communication SSL/TLS',       desc: 'Sécurisation de toutes les communications réseau' },
+    { icon: 'bi-bug-fill',                title: 'Détection de fraude temps réel', desc: 'Modèles ML analysant chaque transaction en continu' },
+    { icon: 'bi-journal-check',           title: 'Traçabilité complète',         desc: 'Journal immuable de toutes les opérations effectuées' },
+    { icon: 'bi-patch-check-fill',        title: 'Conformité ISO 27001',         desc: 'Respect des standards internationaux de sécurité' },
+    { icon: 'bi-person-check-fill',       title: 'Authentification 2FA',         desc: 'TOTP / SMS pour chaque connexion utilisateur' },
   ];
 
   ngOnInit(): void {

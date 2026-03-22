@@ -1,13 +1,12 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DocumentService, Document } from './document.service';
-import { StatusBadgePipe } from '../../shared/pipes/status-badge.pipe';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-documents',
   standalone: true,
-  imports: [CommonModule, StatusBadgePipe],
+  imports: [CommonModule],
   templateUrl: './documents.component.html',
 })
 export class DocumentsComponent implements OnInit {

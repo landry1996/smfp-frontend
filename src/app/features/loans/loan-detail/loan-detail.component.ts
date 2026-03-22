@@ -2,13 +2,10 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { LoanService, LoanResponse } from '../loan.service';
-import { CurrencyFormatPipe } from '../../../shared/pipes/currency-format.pipe';
-import { StatusBadgePipe } from '../../../shared/pipes/status-badge.pipe';
-
 @Component({
   selector: 'app-loan-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, CurrencyFormatPipe, StatusBadgePipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './loan-detail.component.html',
 })
 export class LoanDetailComponent implements OnInit {

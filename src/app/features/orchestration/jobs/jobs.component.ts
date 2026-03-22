@@ -2,12 +2,10 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { OrchestrationService, JobExecution } from '../orchestration.service';
-import { StatusBadgePipe } from '../../../shared/pipes/status-badge.pipe';
-
 @Component({
   selector: 'app-jobs',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusBadgePipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './jobs.component.html',
 })
 export class JobsComponent implements OnInit {

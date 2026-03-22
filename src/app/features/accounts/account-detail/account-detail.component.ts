@@ -4,13 +4,10 @@ import { RouterLink, ActivatedRoute } from '@angular/router';
 import { AccountService } from '../account.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Account } from '../../../core/models/account.models';
-import { CurrencyFormatPipe } from '../../../shared/pipes/currency-format.pipe';
-import { StatusBadgePipe } from '../../../shared/pipes/status-badge.pipe';
-
 @Component({
   selector: 'app-account-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, CurrencyFormatPipe, StatusBadgePipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './account-detail.component.html',
 })
 export class AccountDetailComponent implements OnInit {

@@ -2,12 +2,10 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FraudService, FraudRule } from '../fraud.service';
-import { StatusBadgePipe } from '../../../shared/pipes/status-badge.pipe';
-
 @Component({
   selector: 'app-fraud-rules',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusBadgePipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './fraud-rules.component.html',
 })
 export class FraudRulesComponent implements OnInit {

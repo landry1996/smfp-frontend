@@ -3,13 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoanService, LoanResponse } from '../loan.service';
-import { CurrencyFormatPipe } from '../../../shared/pipes/currency-format.pipe';
-import { StatusBadgePipe } from '../../../shared/pipes/status-badge.pipe';
-
 @Component({
   selector: 'app-loans-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, CurrencyFormatPipe, StatusBadgePipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './loans-list.component.html',
 })
 export class LoansListComponent implements OnInit {

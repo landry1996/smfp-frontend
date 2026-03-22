@@ -3,12 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FraudService, FraudAlert } from '../fraud.service';
 import { FraudDashboardOverview } from '../../../core/models/fraud.models';
-import { StatusBadgePipe } from '../../../shared/pipes/status-badge.pipe';
-
 @Component({
   selector: 'app-fraud-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusBadgePipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './fraud-dashboard.component.html',
 })
 export class FraudDashboardComponent implements OnInit {
