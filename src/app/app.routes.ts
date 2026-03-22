@@ -10,6 +10,12 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
 
+  // ── Demo request (public) ──
+  {
+    path: 'demo',
+    loadComponent: () => import('./features/demo/demo.component').then(m => m.DemoComponent),
+  },
+
   // ── Auth (public) ──
   {
     path: 'auth',

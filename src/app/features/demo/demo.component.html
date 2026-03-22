@@ -1,0 +1,288 @@
+<div class="demo-page">
+
+  <!-- ══════════════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════════════ -->
+  <nav class="demo-navbar navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
+        <div class="demo-logo-badge">
+          <i class="bi bi-bank2"></i>
+        </div>
+        <div>
+          <span class="fw-bold fs-5 d-block lh-1">SMFP</span>
+          <span class="demo-brand-tagline d-none d-md-block">Système de Management Financier</span>
+        </div>
+      </a>
+      <div class="d-flex gap-2 ms-auto">
+        <a routerLink="/auth/login" class="btn btn-outline-light btn-sm px-4">
+          <i class="bi bi-box-arrow-in-right me-1"></i>Connexion
+        </a>
+        <a routerLink="/auth/register" class="btn demo-btn-gold btn-sm px-4">
+          <i class="bi bi-person-plus me-1"></i>Créer un compte
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════ -->
+  <section class="demo-hero d-flex align-items-center">
+    <div class="container position-relative z-1">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-8">
+          <span class="demo-badge-pill">
+            <i class="bi bi-play-circle me-1"></i>Démonstration personnalisée
+          </span>
+          <h1 class="demo-hero-title mt-3">
+            Découvrez SMFP<br>
+            <span class="demo-gradient-text">en action</span>
+          </h1>
+          <p class="demo-hero-sub mt-3 mx-auto">
+            Demandez une démonstration personnalisée et voyez comment SMFP peut moderniser
+            la gestion financière de votre institution.
+          </p>
+          <p class="demo-hero-target mt-2">
+            <i class="bi bi-geo-alt me-1"></i>
+            Conçu pour les institutions de microfinance, les coopératives financières et les réseaux d'agents.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       MAIN CONTENT
+  ══════════════════════════════════════════ -->
+  <section class="demo-content py-6">
+    <div class="container">
+      <div class="row g-5 align-items-start">
+
+        <!-- Left — benefits -->
+        <div class="col-lg-5">
+          <h2 class="demo-section-title">Ce que vous allez découvrir</h2>
+          <p class="demo-section-sub">
+            Notre équipe vous guide à travers les fonctionnalités clés adaptées à votre contexte.
+          </p>
+
+          <ul class="demo-benefits-list mt-4">
+            @for (b of benefits; track b.text) {
+              <li class="demo-benefit-item">
+                <div class="demo-benefit-icon">
+                  <i [class]="'bi ' + b.icon"></i>
+                </div>
+                <span>{{ b.text }}</span>
+              </li>
+            }
+          </ul>
+
+          <!-- Trust block -->
+          <div class="demo-trust-block mt-5">
+            <div class="demo-trust-item">
+              <i class="bi bi-clock-history text-primary"></i>
+              <div>
+                <strong>Réponse sous 24h</strong>
+                <p class="text-muted small mb-0">Un expert vous contacte rapidement.</p>
+              </div>
+            </div>
+            <div class="demo-trust-item">
+              <i class="bi bi-person-badge text-primary"></i>
+              <div>
+                <strong>Démonstration personnalisée</strong>
+                <p class="text-muted small mb-0">Adaptée à votre secteur et vos besoins.</p>
+              </div>
+            </div>
+            <div class="demo-trust-item">
+              <i class="bi bi-shield-check text-primary"></i>
+              <div>
+                <strong>Sans engagement</strong>
+                <p class="text-muted small mb-0">Aucune carte bancaire requise.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right — form or success -->
+        <div class="col-lg-7">
+          <div class="demo-form-card">
+
+            @if (submitted()) {
+              <!-- ── SUCCESS STATE ── -->
+              <div class="demo-success text-center py-4">
+                <div class="demo-success-icon mx-auto mb-4">
+                  <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <h3 class="demo-success-title">Demande envoyée !</h3>
+                <p class="text-muted">
+                  Merci pour votre intérêt. Un membre de notre équipe vous contactera
+                  <strong>dans les 24 heures</strong> pour organiser votre démonstration personnalisée.
+                </p>
+                <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+                  <a routerLink="/" class="btn demo-btn-primary px-5">
+                    <i class="bi bi-house me-2"></i>Retour à l'accueil
+                  </a>
+                  <a routerLink="/auth/register" class="btn btn-outline-secondary px-5">
+                    <i class="bi bi-person-plus me-2"></i>Créer un compte
+                  </a>
+                </div>
+              </div>
+
+            } @else {
+              <!-- ── FORM ── -->
+              <div class="demo-form-header mb-4">
+                <h3 class="demo-form-title">Demander une démonstration</h3>
+                <p class="text-muted small mb-0">
+                  Remplissez le formulaire — nous revenons vers vous sous 24h.
+                </p>
+              </div>
+
+              <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+                <div class="row g-3">
+
+                  <!-- Nom -->
+                  <div class="col-sm-6">
+                    <label class="demo-label">Nom <span class="text-danger">*</span></label>
+                    <label>
+                      <input formControlName="name" type="text"
+                             class="form-control demo-input"
+                             [class.is-invalid]="name.invalid && name.touched"
+                             placeholder="Pierre Landry">
+                    </label>
+                    @if (name.invalid && name.touched) {
+                      <div class="invalid-feedback">Nom requis (2 caractères min.)</div>
+                    }
+                  </div>
+
+                  <!-- Email -->
+                  <div class="col-sm-6">
+                    <label class="demo-label">Email professionnel <span class="text-danger">*</span></label>
+                    <label>
+                      <input formControlName="email" type="email"
+                             class="form-control demo-input"
+                             [class.is-invalid]="email.invalid && email.touched"
+                             placeholder="landry&#64;institution.cm">
+                    </label>
+                    @if (email.invalid && email.touched) {
+                      <div class="invalid-feedback">Email valide requis</div>
+                    }
+                  </div>
+
+                  <!-- Organisation -->
+                  <div class="col-12">
+                    <label class="demo-label">Organisation <span class="text-danger">*</span></label>
+                    <label>
+                      <input formControlName="org" type="text"
+                             class="form-control demo-input"
+                             [class.is-invalid]="org.invalid && org.touched"
+                             placeholder="Ex. : Coopérative Financière de Douala">
+                    </label>
+                    @if (org.invalid && org.touched) {
+                      <div class="invalid-feedback">Nom de l'organisation requis</div>
+                    }
+                  </div>
+
+                  <!-- Pays -->
+                  <div class="col-sm-6">
+                    <label class="demo-label">Pays <span class="text-danger">*</span></label>
+                    <label>
+                      <input formControlName="country" type="text"
+                             class="form-control demo-input"
+                             [class.is-invalid]="country.invalid && country.touched"
+                             placeholder="Ex. : Cameroun">
+                    </label>
+                    @if (country.invalid && country.touched) {
+                      <div class="invalid-feedback">Pays requis</div>
+                    }
+                  </div>
+
+                  <!-- Nombre d'utilisateurs -->
+                  <div class="col-sm-6">
+                    <label class="demo-label">Nombre d'utilisateurs estimé <span class="text-danger">*</span></label>
+                    <label>
+                      <select formControlName="userCount"
+                              class="form-select demo-input"
+                              [class.is-invalid]="userCount.invalid && userCount.touched">
+                        <option value="" disabled>Sélectionner…</option>
+                        @for (opt of userCountOptions; track opt) {
+                          <option [value]="opt">{{ opt }}</option>
+                        }
+                      </select>
+                    </label>
+                    @if (userCount.invalid && userCount.touched) {
+                      <div class="invalid-feedback">Veuillez sélectionner une tranche</div>
+                    }
+                  </div>
+
+                  <!-- Message -->
+                  <div class="col-12">
+                    <label class="demo-label">Message <span class="text-muted small">(optionnel)</span></label>
+                    <label>
+<textarea formControlName="message"
+          class="form-control demo-input"
+          rows="3"
+          placeholder="Décrivez vos besoins ou questions spécifiques…"></textarea>
+                    </label>
+                  </div>
+
+                </div>
+
+                <!-- Submit -->
+                <div class="mt-4">
+                  <button type="submit" class="btn demo-btn-primary btn-lg w-100"
+                          [disabled]="loading()">
+                    @if (loading()) {
+                      <span class="spinner-border spinner-border-sm me-2"></span>Envoi en cours…
+                    } @else {
+                      <i class="bi bi-send-fill me-2"></i>Demander une démonstration
+                    }
+                  </button>
+
+                  <p class="demo-reassurance mt-3 text-center">
+                    <i class="bi bi-clock me-1"></i>
+                    Un membre de notre équipe vous contactera dans les <strong>24 heures</strong>
+                    pour organiser une démonstration personnalisée.
+                  </p>
+                </div>
+
+              </form>
+
+              <!-- Divider -->
+              <div class="demo-divider my-4">
+                <span>ou</span>
+              </div>
+
+              <!-- Alternative CTA -->
+              <div class="text-center">
+                <p class="text-muted small mb-3">Préférez-vous explorer par vous-même ?</p>
+                <a routerLink="/auth/register" class="btn btn-outline-primary w-100">
+                  <i class="bi bi-play-circle me-2"></i>Explorer la démo interactive
+                </a>
+              </div>
+
+            }
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER (minimal)
+  ══════════════════════════════════════════ -->
+  <footer class="demo-footer py-4">
+    <div class="container d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <small class="text-muted">
+        &copy; {{ currentYear }} SMFP — Système de Management Financier
+      </small>
+      <div class="d-flex gap-3">
+        <a routerLink="/" class="demo-footer-link">Accueil</a>
+        <a routerLink="/auth/login" class="demo-footer-link">Connexion</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
